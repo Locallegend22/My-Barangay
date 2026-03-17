@@ -1899,22 +1899,23 @@
             
             const colors = ['bg-primary-100', 'bg-red-100', 'bg-blue-100', 'bg-amber-100', 'bg-purple-100', 'bg-teal-100', 'bg-pink-100', 'bg-indigo-100'];
             
-            container.innerHTML = documentTypesData.filter(t => t.is_active == 1).map((t, i) => `
-                <div onclick="selectDocumentType('${t.slug}', '${t.name}', ${t.fee})" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary-500">
+            const activeTypes = documentTypesData.filter(t => t.is_active !== false);
+            container.innerHTML = activeTypes.map((t, i) => `
+                <div onclick="selectDocumentType('${t._id}', '${t.name}', ${t.price})" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary-500">
                     <div class="w-12 h-12 ${colors[i % colors.length]} rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="${icons[t.slug] || 'file-text'}" class="w-6 h-6 text-primary-700"></i>
+                        <i data-lucide="file-text" class="w-6 h-6 text-primary-700"></i>
                     </div>
                     <h3 class="font-heading font-semibold text-lg">${t.name}</h3>
                     <p class="text-slate-600 text-sm mt-1">${t.description || ''}</p>
-                    <p class="text-primary-600 font-semibold mt-2">₱${t.fee || 0}.00</p>
+                    <p class="text-primary-600 font-semibold mt-2">₱${t.price || 0}.00</p>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        function selectDocumentType(type, name, fee) {
-            document.getElementById('docType').value = type;
-            document.getElementById('selectedDocType').textContent = name || type.replace(/_/g, ' ').toUpperCase();
+        function selectDocumentType(typeId, name, fee) {
+            document.getElementById('docType').value = typeId;
+            document.getElementById('selectedDocType').textContent = name || typeId.replace(/_/g, ' ').toUpperCase();
             document.getElementById('docFee').textContent = `₱${fee || 0}.00`;
             document.getElementById('docApplicantName').value = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : '';
             document.getElementById('documentForm').classList.remove('hidden');
