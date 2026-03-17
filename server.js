@@ -130,7 +130,8 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/auth/profile', authenticateToken, async (req, res) => {
     try {
         const db = getDb();
-        const user = await db.collection('users').findOne({ _id: req.user.id });
+        const { ObjectId } = require('mongodb');
+        const user = await db.collection('users').findOne({ _id: new ObjectId(req.user.id) });
         if (!user) return res.status(404).json({ error: 'User not found' });
         res.json({ id: user._id, email: user.email, first_name: user.first_name, last_name: user.last_name, phone: user.phone, address: user.address, role: user.role, photo_url: user.photo_url });
     } catch (error) {
