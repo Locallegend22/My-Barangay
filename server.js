@@ -139,6 +139,21 @@ app.get('/api/auth/profile', authenticateToken, async (req, res) => {
     }
 });
 
+app.put('/api/auth/profile', authenticateToken, async (req, res) => {
+    try {
+        const db = getDb();
+        const { ObjectId } = require('mongodb');
+        const { first_name, last_name, phone, address } = req.body;
+        await db.collection('users').updateOne(
+            { _id: new ObjectId(req.user.id) },
+            { $set: { first_name, last_name, phone, address } }
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/api/users', authenticateToken, requireRole('admin'), async (req, res) => {
     try {
         const db = getDb();

@@ -2563,17 +2563,11 @@
                 const tbody = document.getElementById('docTypesTable');
                 tbody.innerHTML = types.map(t => `
                     <tr>
-                        <td class="px-4 py-3"><input type="text" value="${t.name}" onchange="updateDocType(${t.id}, 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
-                        <td class="px-4 py-3"><input type="text" value="${t.description || ''}" onchange="updateDocType(${t.id}, 'description', this.value)" class="border rounded px-2 py-1 w-full"></td>
-                        <td class="px-4 py-3"><input type="number" value="${t.fee}" onchange="updateDocType(${t.id}, 'fee', this.value)" class="border rounded px-2 py-1 w-24"></td>
+                        <td class="px-4 py-3"><input type="text" value="${t.name}" onchange="updateDocType('${t._id}', 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${t.description || ''}" onchange="updateDocType('${t._id}', 'description', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="number" value="${t.price || 0}" onchange="updateDocType('${t._id}', 'price', this.value)" class="border rounded px-2 py-1 w-24"></td>
                         <td class="px-4 py-3">
-                            <select onchange="updateDocType(${t.id}, 'is_active', this.value)" class="border rounded px-2 py-1">
-                                <option value="1" ${t.is_active == 1 ? 'selected' : ''}>Active</option>
-                                <option value="0" ${t.is_active == 0 ? 'selected' : ''}>Inactive</option>
-                            </select>
-                        </td>
-                        <td class="px-4 py-3">
-                            <button onclick="deleteDocType(${t.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteDocType('${t._id}')" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>
                     </tr>
                 `).join('');
@@ -2584,15 +2578,15 @@
         async function addDocumentType(e) {
             e.preventDefault();
             const name = document.getElementById('docTypeName').value;
-            const slug = document.getElementById('docTypeSlug').value;
             const description = document.getElementById('docTypeDesc').value;
-            const fee = parseFloat(document.getElementById('docTypeFee').value);
+            const price = parseFloat(document.getElementById('docTypeFee').value);
+            const requirements = 'Valid ID';
             
             try {
                 const res = await fetch(`${API_URL}/document-types`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ name, slug, description, fee })
+                    body: JSON.stringify({ name, description, price, requirements })
                 });
                 if (res.ok) {
                     alert('Document type added!');
@@ -2603,9 +2597,10 @@
         }
 
         async function updateDocType(id, field, value) {
-            const type = (await fetch(`${API_URL}/document-types`).then(r => r.json())).find(t => t.id === id);
+            const types = await fetch(`${API_URL}/document-types`).then(r => r.json());
+            const type = types.find(t => t._id === id);
             if (!type) return;
-            type[field] = field === 'fee' || field === 'is_active' ? parseFloat(value) : value;
+            type[field] = field === 'price' ? parseFloat(value) : value;
             await fetch(`${API_URL}/document-types/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -2620,15 +2615,6 @@
         }
 
         // Officials Management
-        async function loadAdminOfficials() {
-            try {
-                const res = await fetch(`${API_URL}/officials`);
-                const officials = await res.json();
-                const tbody = document.getElementById('adminOfficialsTable');
-                tbody.innerHTML = officials.map(o => `
-                    <tr>
-                        <td class="px-4 py-3"><input type="text" value="${o.name}" onchange="updateOfficial(${o.id}, 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
-                        <td class="px-4 py-3"><input type="text" value="${o.position}" onchange="updateOfficial(${o.id}, 'position', this.value)" class="border rounded px-2 py-1 w-full"></td>
                         <td class="px-4 py-3"><input type="text" value="${o.phone || ''}" onchange="updateOfficial(${o.id}, 'phone', this.value)" class="border rounded px-2 py-1 w-32"></td>
                         <td class="px-4 py-3"><input type="email" value="${o.email || ''}" onchange="updateOfficial(${o.id}, 'email', this.value)" class="border rounded px-2 py-1 w-40"></td>
                         <td class="px-4 py-3">
