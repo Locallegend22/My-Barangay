@@ -3,19 +3,28 @@ const { MongoClient } = require('mongodb');
 let db = null;
 let client = null;
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017';
-const DB_NAME = process.env.DB_NAME || 'barangay';
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const DB_NAME = process.env.DB_NAME || process.env.MONGODB_DATABASE || 'barangay';
 
 async function initDatabase() {
-    client = new MongoClient(MONGO_URI);
-    await client.connect();
-    db = client.db(DB_NAME);
-    
-    await createIndexes();
-    await seedData();
-    
-    console.log('Connected to MongoDB');
-    return db;
+    try {
+        console.log('Connecting to MongoDB...');
+        client = new MongoClient(MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        await client.connect();
+        db = client.db(DB_NAME);
+        
+        await createIndexes();
+        await seedData();
+        
+        console.log('Connected to MongoDB successfully');
+        return db;
+    } catch (error) {
+        console.error('MongoDB connection error:', error);
+        throw error;
+    }
 }
 
 async function createIndexes() {
