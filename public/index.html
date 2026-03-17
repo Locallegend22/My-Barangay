@@ -1,0 +1,3252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Barangay Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#166534',
+                            800: '#14532d',
+                            900: '#052e16'
+                        },
+                        secondary: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; }
+        .sidebar { transition: transform 0.3s ease; position: relative; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; }
+            .sidebar.open { transform: translateX(0); }
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <div id="app">
+        <!-- Navigation -->
+        <nav id="mainNav" class="bg-primary-700 text-white shadow-lg hidden">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-6">
+                        <span id="navLabel" class="font-heading font-bold text-lg hidden">Barangay Management System</span>
+                        <div id="navLinks" class="hidden md:flex items-center gap-4">
+                            <a href="#" onclick="showPage('home')" id="navHome" class="hover:text-primary-200 transition text-sm hidden">Home</a>
+                            <a href="#" onclick="showPage('documents')" id="navDocuments" class="hover:text-primary-200 transition text-sm hidden">Documents</a>
+                            <a href="#" onclick="showPage('profile')" id="navProfile" class="hover:text-primary-200 transition text-sm hidden">Profile</a>
+                            <a href="#" onclick="showPage('directory')" id="navDirectory" class="hover:text-primary-200 transition text-sm hidden">Directory</a>
+                            <a href="#" onclick="showPage('transparency')" id="navTransparency" class="hover:text-primary-200 transition text-sm hidden">Transparency</a>
+                            <a href="#" onclick="showPage('community')" id="navCommunity" class="hover:text-primary-200 transition text-sm hidden">Community</a>
+                            <a href="#" onclick="showPage('emergency')" id="navEmergency" class="hover:text-primary-200 transition text-sm hidden">Emergency</a>
+                            <a href="#" onclick="showPage('business')" id="navBusiness" class="hover:text-primary-200 transition text-sm hidden">Business</a>
+                            <a href="#" onclick="showPage('incidents')" id="navIncidents" class="hover:text-primary-200 transition text-sm hidden">Report Incident</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="loginBtn" onclick="showPage('login')" class="bg-white text-primary-700 px-4 py-2 rounded-lg font-medium hover:bg-primary-50 transition">
+                            Login
+                        </button>
+                        <button id="menuBtn" class="md:hidden p-2 hover:bg-primary-600 rounded-lg">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar fixed left-0 top-0 h-full w-64 bg-white shadow-xl z-40 hidden overflow-y-auto flex flex-col justify-between">
+            <div class="p-4 border-b">
+                <div class="flex items-center gap-2 text-primary-700">
+                    <i data-lucide="building-2" class="w-8 h-8"></i>
+                    <span class="font-heading font-bold text-xl">BarangayHub</span>
+                </div>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto">
+                <div class="space-y-2">
+                    <a href="#" onclick="showPage('dashboard')" id="sidebarDashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+                    </a>
+                    <a href="#" onclick="showPage('adminDocServices')" id="sidebarAdminDocs" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="file-text" class="w-5 h-5"></i> Document Services
+                    </a>
+                    <a href="#" onclick="showPage('adminOfficials')" id="sidebarAdminOfficials" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="users" class="w-5 h-5"></i> Officials
+                    </a>
+                    <a href="#" onclick="showPage('adminOrdinances')" id="sidebarAdminOrdinances" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="scale" class="w-5 h-5"></i> Ordinances
+                    </a>
+                    <a href="#" onclick="showPage('adminProjects')" id="sidebarAdminProjects" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="hard-hat" class="w-5 h-5"></i> Projects
+                    </a>
+                    <a href="#" onclick="showPage('adminEvents')" id="sidebarAdminEvents" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="calendar" class="w-5 h-5"></i> Events
+                    </a>
+                    <a href="#" onclick="showPage('adminAnnouncements')" id="sidebarAdminAnnouncements" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="megaphone" class="w-5 h-5"></i> Announcements
+                    </a>
+                    <a href="#" onclick="showPage('adminHotlines')" id="sidebarAdminHotlines" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="phone" class="w-5 h-5"></i> Hotlines
+                    </a>
+                    <a href="#" onclick="showPage('adminEvacuation')" id="sidebarAdminEvacuation" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="home" class="w-5 h-5"></i> Evacuation Centers
+                    </a>
+                    <a href="#" onclick="showPage('adminUsers')" id="sidebarAdminUsers" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="users" class="w-5 h-5"></i> User Accounts
+                    </a>
+                    <a href="#" onclick="showPage('adminBusinessPermits')" id="sidebarAdminBusinessPermits" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700 hidden">
+                        <i data-lucide="file-check" class="w-5 h-5"></i> Business Permits
+                    </a>
+                </div>
+            </div>
+            <div class="p-4 border-t bg-white">
+                <div id="sidebarAdminUserMenu" class="relative">
+                        <button onclick="toggleSidebarUserMenu('admin')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 w-full">
+                            <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
+                                <span id="sidebarUserInitials" class="text-sm font-medium text-white">JD</span>
+                            </div>
+                            <div class="flex-1 min-w-0 text-left">
+                                <p id="sidebarUserName" class="text-sm font-medium text-slate-800 truncate">Juan Dela Cruz</p>
+                                <p id="sidebarUserRole" class="text-xs text-slate-500">Admin</p>
+                            </div>
+                            <i data-lucide="chevron-up" class="w-4 h-4 text-slate-500"></i>
+                        </button>
+                        <div id="sidebarAdminUserDropdown" class="hidden absolute bottom-full left-0 right-0 mb-2 bg-white border rounded-lg shadow-lg">
+                            <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 w-full">
+                                <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resident Sidebar -->
+        <div id="residentSidebar" class="sidebar fixed left-0 top-0 h-full w-64 bg-white shadow-xl z-40 hidden overflow-y-auto flex flex-col justify-between">
+            <div class="p-4 border-b">
+                <div class="flex items-center gap-2 text-primary-700">
+                    <i data-lucide="building-2" class="w-8 h-8"></i>
+                    <span class="font-heading font-bold text-xl">BarangayHub</span>
+                </div>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto">
+                <div class="space-y-2">
+                    <a href="#" onclick="showPage('home')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="home" class="w-5 h-5"></i> Home
+                    </a>
+                    <a href="#" onclick="showPage('documents')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="file-text" class="w-5 h-5"></i> Documents
+                    </a>
+                    <a href="#" onclick="showPage('profile')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="user" class="w-5 h-5"></i> Profile
+                    </a>
+                    <a href="#" onclick="showPage('directory')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="users" class="w-5 h-5"></i> Directory
+                    </a>
+                    <a href="#" onclick="showPage('transparency')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="file-check" class="w-5 h-5"></i> Transparency
+                    </a>
+                    <a href="#" onclick="showPage('community')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="calendar" class="w-5 h-5"></i> Community
+                    </a>
+                    <a href="#" onclick="showPage('emergency')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="phone-call" class="w-5 h-5"></i> Emergency
+                    </a>
+                    <a href="#" onclick="showPage('business')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="store" class="w-5 h-5"></i> Business
+                    </a>
+                    <a href="#" onclick="showPage('incidents')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 text-slate-700">
+                        <i data-lucide="alert-triangle" class="w-5 h-5"></i> Report Incident
+                    </a>
+                </div>
+            </div>
+            <div class="p-4 border-t bg-white">
+                <div id="sidebarResidentUserMenu" class="relative">
+                    <button onclick="toggleSidebarUserMenu('resident')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-50 w-full">
+                        <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
+                            <span id="residentSidebarUserInitials" class="text-sm font-medium text-white">JD</span>
+                        </div>
+                        <div class="flex-1 min-w-0 text-left">
+                            <p id="residentSidebarUserName" class="text-sm font-medium text-slate-800 truncate">Juan Dela Cruz</p>
+                            <p id="residentSidebarUserRole" class="text-xs text-slate-500">Resident</p>
+                        </div>
+                        <i data-lucide="chevron-up" class="w-4 h-4 text-slate-500"></i>
+                    </button>
+                    <div id="sidebarResidentUserDropdown" class="hidden absolute bottom-full left-0 right-0 mb-2 bg-white border rounded-lg shadow-lg">
+                        <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 w-full">
+                            <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay -->
+        <div id="overlay" onclick="closeSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden"></div>
+
+        <!-- Login Page (Full Screen) -->
+        <div id="loginPage" class="fixed inset-0 z-50 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
+            <div class="max-w-md w-full mx-4">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="building-2" class="w-8 h-8 text-primary-700"></i>
+                        </div>
+                        <h2 class="font-heading text-2xl font-bold text-slate-800">Welcome Back</h2>
+                        <p class="text-slate-600">Sign in to access barangay services</p>
+                    </div>
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                            <input type="email" id="loginEmail" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                            <input type="password" id="loginPassword" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-semibold transition">
+                            Sign In
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center">
+                        <p class="text-slate-600">Don't have an account? <button onclick="showRegister()" class="text-primary-600 hover:text-primary-700 font-medium">Register</button></p>
+                    </div>
+                    <div class="mt-4 p-3 bg-slate-50 rounded-lg">
+                        <p class="text-xs text-slate-500 text-center">Demo: admin@barangay.gov / admin123</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Page (Full Screen) -->
+        <div id="registerPage" class="fixed inset-0 z-50 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center hidden">
+            <div class="max-w-md w-full mx-4">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="user-plus" class="w-8 h-8 text-primary-700"></i>
+                        </div>
+                        <h2 class="font-heading text-2xl font-bold text-slate-800">Create Account</h2>
+                        <p class="text-slate-600">Register to access online services</p>
+                    </div>
+                    <form onsubmit="handleRegister(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
+                                <input type="text" id="regFirstName" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
+                                <input type="text" id="regLastName" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                            <input type="email" id="regEmail" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                            <input type="tel" id="regPhone" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="09123456789">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                            <input type="text" id="regAddress" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="House No., Street, Village">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                            <input type="password" id="regPassword" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                        </div>
+                        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-semibold transition">
+                            Register
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center">
+                        <p class="text-slate-600">Already have an account? <button onclick="showLogin()" class="text-primary-600 hover:text-primary-700 font-medium">Sign In</button></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main id="mainContent" class="md:ml-64 min-h-screen">
+            <!-- Home Page -->
+            <div id="home" class="page active">
+                <!-- Hero Section -->
+                <section class="bg-gradient-to-br from-primary-700 to-primary-900 text-white py-20">
+                    <div class="max-w-7xl mx-auto px-4">
+                        <div class="text-center">
+                            <h1 class="font-heading text-4xl md:text-5xl font-bold mb-4">Welcome to BarangayHub</h1>
+                            <p class="text-xl text-primary-100 mb-8">Your Digital Gateway to Barangay Services</p>
+                            <div class="flex flex-wrap justify-center gap-4">
+                                <button onclick="showPage('documents')" class="bg-secondary-500 hover:bg-secondary-600 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i> Apply for Documents
+                                </button>
+                                <button onclick="showPage('tracking')" class="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                                    <i data-lucide="search" class="w-5 h-5"></i> Track Application
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Services -->
+                <section class="py-16 bg-white">
+                    <div class="max-w-7xl mx-auto px-4">
+                        <h2 class="font-heading text-3xl font-bold text-center text-slate-800 mb-12">Quick Services</h2>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div onclick="showPage('documents')" class="bg-slate-50 p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer group">
+                                <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200">
+                                    <i data-lucide="file-text" class="w-7 h-7 text-primary-700"></i>
+                                </div>
+                                <h3 class="font-heading font-semibold text-lg mb-2">Document Services</h3>
+                                <p class="text-slate-600 text-sm">Apply for clearance, certificates, and permits online</p>
+                            </div>
+                            <div onclick="showPage('incidents')" class="bg-slate-50 p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer group">
+                                <div class="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200">
+                                    <i data-lucide="alert-triangle" class="w-7 h-7 text-red-700"></i>
+                                </div>
+                                <h3 class="font-heading font-semibold text-lg mb-2">Report Incident</h3>
+                                <p class="text-slate-600 text-sm">File a complaint or report an incident</p>
+                            </div>
+                            <div onclick="showPage('business')" class="bg-slate-50 p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer group">
+                                <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-amber-200">
+                                    <i data-lucide="store" class="w-7 h-7 text-amber-700"></i>
+                                </div>
+                                <h3 class="font-heading font-semibold text-lg mb-2">Business Permit</h3>
+                                <p class="text-slate-600 text-sm">Register or renew your business permit</p>
+                            </div>
+                            <div onclick="showPage('emergency')" class="bg-slate-50 p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer group">
+                                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-200">
+                                    <i data-lucide="phone-call" class="w-7 h-7 text-blue-700"></i>
+                                </div>
+                                <h3 class="font-heading font-semibold text-lg mb-2">Emergency</h3>
+                                <p class="text-slate-600 text-sm">Hotlines and emergency contacts</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Announcements -->
+                <section id="homeAnnouncements" class="py-16 bg-slate-50">
+                    <div class="max-w-7xl mx-auto px-4">
+                        <h2 class="font-heading text-3xl font-bold text-center text-slate-800 mb-12">Latest Announcements</h2>
+                        <div id="announcementsList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Events Preview -->
+                <section class="py-16 bg-white">
+                    <div class="max-w-7xl mx-auto px-4">
+                        <div class="flex justify-between items-center mb-12">
+                            <h2 class="font-heading text-3xl font-bold text-slate-800">Upcoming Events</h2>
+                            <button onclick="showPage('community')" class="text-primary-600 hover:text-primary-700 font-medium">View All</button>
+                        </div>
+                        <div id="eventsPreview" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Documents Page -->
+            <div id="documents" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Online Document Services</h2>
+                    
+                    <!-- Document Types -->
+                    <div id="documentTypesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Dynamic content loaded from API -->
+                    </div>
+
+                    <!-- Document Application Form -->
+                    <div id="documentForm" class="bg-white rounded-xl shadow-sm p-6 hidden">
+                        <h3 class="font-heading text-xl font-semibold mb-6">Apply for Document</h3>
+                        <form onsubmit="submitDocument(event)" class="space-y-4">
+                            <input type="hidden" id="docType">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Applicant Name</label>
+                                <input type="text" id="docApplicantName" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="Enter your full name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Document Type</label>
+                                <div id="selectedDocType" class="px-4 py-3 bg-slate-100 rounded-lg font-medium text-primary-700"></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Purpose / Description</label>
+                                <textarea id="docDescription" required rows="3" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="Please specify the purpose of this document..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Fee</label>
+                                <div id="docFee" class="px-4 py-3 bg-primary-50 rounded-lg font-semibold text-primary-700 text-lg"></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Payment Method</label>
+                                <select id="docPaymentMethod" onchange="updatePaymentInfo()" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                    <option value="over_the_counter">Over the Counter</option>
+                                    <option value="gcash">GCash</option>
+                                </select>
+                            </div>
+                            <div id="gcashInfo" class="bg-green-50 border border-green-200 rounded-lg p-4 hidden">
+                                <p class="text-sm text-green-700 font-medium">GCash Payment</p>
+                                <p class="text-lg font-bold text-green-800">Pay to: <span id="gcashNumber"></span></p>
+                            </div>
+                            <div class="flex gap-4">
+                                <button type="button" onclick="cancelDocument()" class="px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-semibold transition">
+                                    Submit Application
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- My Documents -->
+                    <div class="mt-12">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-heading text-xl font-semibold">My Document Applications</h3>
+                            <div class="flex gap-2">
+                                <input type="text" id="myDocsSearch" onkeyup="filterMyDocs()" placeholder="Search documents..." class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                <button onclick="loadMyDocuments()" class="flex items-center gap-2 px-3 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Tracking Code</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Applicant Name</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Type</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Fee</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Payment</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Remarks</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Date</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myDocuments" class="divide-y">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracking Page -->
+            <div id="tracking" class="page">
+                <div class="max-w-3xl mx-auto px-4 py-12">
+                    <div class="bg-white rounded-xl shadow-lg p-8">
+                        <div class="text-center mb-8">
+                            <i data-lucide="search" class="w-12 h-12 text-primary-600 mx-auto mb-4"></i>
+                            <h2 class="font-heading text-2xl font-bold text-slate-800">Track Your Application</h2>
+                            <p class="text-slate-600">Enter your tracking code to check the status</p>
+                        </div>
+                        <form onsubmit="trackDocument(event)" class="space-y-4">
+                            <input type="text" id="trackingCode" class="w-full px-4 py-4 border-2 border-slate-200 rounded-lg focus:border-primary-500 text-center text-lg font-mono" placeholder="BRG-XXXXXXXX">
+                            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-lg font-semibold transition">
+                                Track Status
+                            </button>
+                        </form>
+                        <div id="trackingResult" class="mt-8 hidden">
+                            <div class="border rounded-lg overflow-hidden">
+                                <div class="bg-slate-50 px-6 py-4 border-b">
+                                    <span class="text-sm text-slate-500">Document Type:</span>
+                                    <span id="trackType" class="font-semibold ml-2"></span>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <span class="text-sm text-slate-500">Status:</span>
+                                        <span id="trackStatus" class="px-3 py-1 rounded-full text-sm font-medium"></span>
+                                    </div>
+                                    <div class="flex items-center justify-between mb-6">
+                                        <span class="text-sm text-slate-500">Payment:</span>
+                                        <span id="trackPayment" class="px-3 py-1 rounded-full text-sm font-medium"></span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-slate-500">Fee:</span>
+                                        <span id="trackFee" class="font-semibold"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile" class="page">
+                <div class="max-w-4xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">My Profile</h2>
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <form onsubmit="updateProfile(event)" class="space-y-6">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
+                                    <input type="text" id="profileFirstName" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
+                                    <input type="text" id="profileLastName" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                <input type="email" id="profileEmail" disabled class="w-full px-4 py-3 border border-slate-200 rounded-lg bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                <input type="tel" id="profilePhone" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                                <input type="text" id="profileAddress" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            </div>
+                            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+                                Save Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incidents Page -->
+            <div id="incidents" class="page">
+                <div class="max-w-4xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Report an Incident</h2>
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <form onsubmit="submitIncident(event)" class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Incident Type</label>
+                                <select id="incidentType" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                    <option value="noise_complaint">Noise Complaint</option>
+                                    <option value="property_damage">Property Damage</option>
+                                    <option value="theft">Theft / Robbery</option>
+                                    <option value="assault">Assault</option>
+                                    <option value="traffic">Traffic Incident</option>
+                                    <option value="environmental">Environmental Violation</option>
+                                    <option value="dispute">Neighbor Dispute</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                                <input type="text" id="incidentLocation" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="Street address or landmark">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                <textarea id="incidentDescription" required rows="4" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="Describe what happened in detail..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition">
+                                Submit Report
+                            </button>
+                        </form>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="font-heading text-xl font-semibold mb-6">My Incident Reports</h3>
+                        <div id="myIncidents" class="space-y-4">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Directory Page -->
+            <div id="directory" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Barangay Directory</h2>
+                    
+                    <!-- Officials -->
+                    <div class="mb-12">
+                        <h3 class="font-heading text-2xl font-semibold mb-6 flex items-center gap-2">
+                            <i data-lucide="users" class="w-6 h-6 text-primary-600"></i> Barangay Officials
+                        </h3>
+                        <div id="officialsList" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+
+                    <!-- Businesses -->
+                    <div>
+                        <h3 class="font-heading text-2xl font-semibold mb-6 flex items-center gap-2">
+                            <i data-lucide="store" class="w-6 h-6 text-amber-600"></i> Registered Businesses
+                        </h3>
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Business Name</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Type</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Address</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="businessesList" class="divide-y">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transparency Page -->
+            <div id="transparency" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Transparency & Governance</h2>
+                    
+                    <!-- Tabs -->
+                    <div class="flex gap-2 mb-8 overflow-x-auto">
+                        <button onclick="showTransparencyTab('budget')" class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap bg-primary-600 text-white" data-tab="budget">Budget Reports</button>
+                        <button onclick="showTransparencyTab('ordinances')" class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-tab="ordinances">Ordinances</button>
+                        <button onclick="showTransparencyTab('projects')" class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-tab="projects">Projects</button>
+                    </div>
+
+                    <!-- Budget Tab -->
+                    <div id="budgetTab" class="transparency-tab">
+                        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                            <h3 class="font-heading text-xl font-semibold mb-4">Financial Summary</h3>
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="bg-primary-50 p-4 rounded-lg">
+                                    <p class="text-sm text-primary-600">Total Budget</p>
+                                    <p class="text-2xl font-bold text-primary-700" id="totalBudget">₱350,000</p>
+                                </div>
+                                <div class="bg-amber-50 p-4 rounded-lg">
+                                    <p class="text-sm text-amber-600">Spent</p>
+                                    <p class="text-2xl font-bold text-amber-700" id="spentBudget">₱350,000</p>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <p class="text-sm text-green-600">Remaining</p>
+                                    <p class="text-2xl font-bold text-green-700">₱0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Title</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Category</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Amount</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="budgetTable" class="divide-y">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Ordinances Tab -->
+                    <div id="ordinancesTab" class="transparency-tab hidden">
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Ordinance #</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Title</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Category</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordinancesTable" class="divide-y">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Projects Tab -->
+                    <div id="projectsTab" class="transparency-tab hidden">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white rounded-xl shadow-sm p-6">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Completed</span>
+                                </div>
+                                <h4 class="font-heading font-semibold text-lg">Road Paving Project</h4>
+                                <p class="text-slate-600 text-sm mt-2">Paving of 500 meters of barangay roads</p>
+                                <div class="mt-4 flex justify-between text-sm">
+                                    <span class="text-slate-500">Budget: ₱500,000</span>
+                                    <span class="text-slate-500">Completed: Jan 2026</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm p-6">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">Ongoing</span>
+                                </div>
+                                <h4 class="font-heading font-semibold text-lg">Health Center Renovation</h4>
+                                <p class="text-slate-600 text-sm mt-2">Renovation and expansion of barangay health center</p>
+                                <div class="mt-4 flex justify-between text-sm">
+                                    <span class="text-slate-500">Budget: ₱300,000</span>
+                                    <span class="text-slate-500">Target: Mar 2026</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm p-6">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded">Planning</span>
+                                </div>
+                                <h4 class="font-heading font-semibold text-lg">Park Improvement</h4>
+                                <p class="text-slate-600 text-sm mt-2">Improvement of barangay park facilities</p>
+                                <div class="mt-4 flex justify-between text-sm">
+                                    <span class="text-slate-500">Budget: ₱150,000</span>
+                                    <span class="text-slate-500">Target: Q2 2026</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm p-6">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">Ongoing</span>
+                                </div>
+                                <h4 class="font-heading font-semibold text-lg">Digital Transformation</h4>
+                                <p class="text-slate-600 text-sm mt-2">Implementation of online services system</p>
+                                <div class="mt-4 flex justify-between text-sm">
+                                    <span class="text-slate-500">Budget: ₱200,000</span>
+                                    <span class="text-slate-500">Target: Q1 2026</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Page -->
+            <div id="community" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Community</h2>
+                    
+                    <!-- Events Calendar -->
+                    <div class="mb-12">
+                        <h3 class="font-heading text-2xl font-semibold mb-6 flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-6 h-6 text-primary-600"></i> Events Calendar
+                        </h3>
+                        <div id="eventsCalendar" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+
+                    <!-- Announcements -->
+                    <div>
+                        <h3 class="font-heading text-2xl font-semibold mb-6 flex items-center gap-2">
+                            <i data-lucide="megaphone" class="w-6 h-6 text-amber-600"></i> News & Announcements
+                        </h3>
+                        <div id="communityAnnouncements" class="space-y-4">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Page -->
+            <div id="emergency" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Emergency Services</h2>
+                    
+                    <!-- Emergency Alerts -->
+                    <div id="emergencyAlerts" class="mb-8 hidden">
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg flex items-center gap-3">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                            <div>
+                                <p class="font-semibold text-red-800" id="alertTitle"></p>
+                                <p class="text-sm text-red-600" id="alertContent"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hotlines -->
+                    <div class="mb-12">
+                        <h3 class="font-heading text-2xl font-semibold mb-6 flex items-center gap-2">
+                            <i data-lucide="phone-call" class="w-6 h-6 text-red-600"></i> Emergency Hotlines
+                        </h3>
+                        <div id="hotlinesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Report -->
+                    <div class="mb-12">
+                        <h3 class="font-heading text-2xl font-semibold mb-6 flex items-center gap-2">
+                            <i data-lucide="alert-circle" class="w-6 h-6 text-amber-600"></i> Quick Incident Report
+                        </h3>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <p class="text-slate-600 mb-4">Report an incident quickly. For emergencies, please call the hotlines above.</p>
+                            <button onclick="showPage('incidents')" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+                                Report Incident
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Evacuation Centers -->
+                    <div>
+                        <h3 class="font-heading text-2xl font-semibold mb-6 flex items-center gap-2">
+                            <i data-lucide="home" class="w-6 h-6 text-blue-600"></i> Evacuation Centers
+                        </h3>
+                        <div id="evacuationList" class="grid md:grid-cols-2 gap-6">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Page -->
+            <div id="business" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Business Services</h2>
+                    
+                    <!-- Apply for Permit -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-6">Apply for Business Permit</h3>
+                        <form onsubmit="submitBusiness(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Business Name</label>
+                                <input type="text" id="businessName" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Business Type</label>
+                                <select id="businessType" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                    <option value="retail">Retail</option>
+                                    <option value="food">Food & Restaurant</option>
+                                    <option value="services">Services</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="others">Others</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Business Address</label>
+                                <input type="text" id="businessAddress" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            </div>
+                            <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+                                Submit Application
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- My Business Applications -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-6">My Business Applications</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Business Name</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Address</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myBusinessesTable" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="dashboard" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Admin Dashboard</h2>
+                    
+                    <!-- Stats -->
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-500">Total Residents</p>
+                                    <p id="statResidents" class="text-3xl font-bold text-slate-800">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="users" class="w-6 h-6 text-primary-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-500">Pending Documents</p>
+                                    <p id="statPending" class="text-3xl font-bold text-slate-800">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="file-clock" class="w-6 h-6 text-amber-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-500">Open Incidents</p>
+                                    <p id="statIncidents" class="text-3xl font-bold text-slate-800">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-500">Businesses</p>
+                                    <p id="statBusinesses" class="text-3xl font-bold text-slate-800">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="store" class="w-6 h-6 text-amber-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Settings -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-6">Payment Settings</h3>
+                        <div class="flex gap-4 items-end">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">GCash Number</label>
+                                <input type="text" id="adminGcashNumber" placeholder="Enter GCash number" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            </div>
+                            <button onclick="saveGcashNumber()" class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">
+                                Save GCash Number
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Documents -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-heading text-xl font-semibold">Recent Document Applications</h3>
+                            <input type="text" id="adminDocsSearch" onkeyup="filterAdminDocs()" placeholder="Search documents..." class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Tracking</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Applicant</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Fee</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Payment</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Remarks</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminDashboardDocs" class="divide-y">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recent Incidents -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="font-heading text-xl font-semibold mb-6">Recent Incidents</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Date</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Location</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Reporter</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminIncidents" class="divide-y">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Document Types Page -->
+            <div id="adminDocServices" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Document Services Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Document Service</h3>
+                        <form onsubmit="addDocumentType(event)" class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Document Name</label>
+                                <input type="text" id="docTypeName" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Slug (unique)</label>
+                                <input type="text" id="docTypeSlug" required class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., building_permit">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                <input type="text" id="docTypeDesc" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Fee (₱)</label>
+                                <input type="number" id="docTypeFee" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    Add Document Service
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Document Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Description</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Fee</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="docTypesTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Officials Page -->
+            <div id="adminOfficials" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Officials Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Official</h3>
+                        <form onsubmit="addOfficial(event)" class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                                <input type="text" id="officialName" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Position</label>
+                                <input type="text" id="officialPosition" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                <input type="text" id="officialPhone" class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                <input type="email" id="officialEmail" class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Office Hours</label>
+                                <input type="text" id="officialHours" class="w-full px-4 py-2 border rounded-lg" placeholder="Mon-Fri: 8AM-5PM">
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    Add Official
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Position</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Phone</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Email</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOfficialsTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Ordinances Page -->
+            <div id="adminOrdinances" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Ordinances Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Ordinance</h3>
+                        <form onsubmit="addOrdinance(event)" class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                                <input type="text" id="ordinanceTitle" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Ordinance Number</label>
+                                <input type="text" id="ordinanceNumber" required class="w-full px-4 py-2 border rounded-lg" placeholder="ORD-001-2024">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                                <select id="ordinanceCategory" class="w-full px-4 py-2 border rounded-lg">
+                                    <option value="environmental">Environmental</option>
+                                    <option value="business">Business</option>
+                                    <option value="security">Security</option>
+                                    <option value="health">Health</option>
+                                    <option value="others">Others</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                                <select id="ordinanceStatus" class="w-full px-4 py-2 border rounded-lg">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                <textarea id="ordinanceDesc" rows="2" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    Add Ordinance
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Ord #</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Title</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Category</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrdinancesTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Projects Page -->
+            <div id="adminProjects" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Projects Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Project</h3>
+                        <form onsubmit="addProject(event)" class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Project Title</label>
+                                <input type="text" id="projectTitle" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Budget (₱)</label>
+                                <input type="number" id="projectBudget" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                                <select id="projectStatus" class="w-full px-4 py-2 border rounded-lg">
+                                    <option value="planning">Planning</option>
+                                    <option value="ongoing">Ongoing</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Target Date</label>
+                                <input type="date" id="projectTarget" class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                <textarea id="projectDesc" rows="2" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    Add Project
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Title</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Budget</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Target Date</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProjectsTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Events Page -->
+            <div id="adminEvents" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Events Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Event</h3>
+                        <form onsubmit="addEvent(event)" class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Event Title</label>
+                                <input type="text" id="eventTitle" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Event Date</label>
+                                <input type="date" id="eventDate" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                                <input type="text" id="eventLocation" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Event Type</label>
+                                <select id="eventType" class="w-full px-4 py-2 border rounded-lg">
+                                    <option value="community">Community</option>
+                                    <option value="health">Health</option>
+                                    <option value="celebration">Celebration</option>
+                                    <option value="meeting">Meeting</option>
+                                    <option value="education">Education</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                <textarea id="eventDesc" rows="2" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    Add Event
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Title</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Date</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Location</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminEventsTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Announcements Page -->
+            <div id="adminAnnouncements" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Announcements Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Announcement</h3>
+                        <form onsubmit="addAnnouncement(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                                <input type="text" id="announcementTitle" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                                    <select id="announcementCategory" class="w-full px-4 py-2 border rounded-lg">
+                                        <option value="general">General</option>
+                                        <option value="health">Health</option>
+                                        <option value="infrastructure">Infrastructure</option>
+                                        <option value="announcement">Announcement</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+                                    <select id="announcementPriority" class="w-full px-4 py-2 border rounded-lg">
+                                        <option value="normal">Normal</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Content</label>
+                                <textarea id="announcementContent" required rows="3" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                            </div>
+                            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                Add Announcement
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Title</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Category</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Priority</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Date</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAnnouncementsTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Hotlines Page -->
+            <div id="adminHotlines" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Hotlines Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Hotline</h3>
+                        <form onsubmit="addHotline(event)" class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                                <input type="text" id="hotlineName" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                <input type="text" id="hotlinePhone" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                                <select id="hotlineCategory" class="w-full px-4 py-2 border rounded-lg">
+                                    <option value="security">Security</option>
+                                    <option value="health">Health</option>
+                                    <option value="fire">Fire</option>
+                                    <option value="police">Police</option>
+                                    <option value="medical">Medical</option>
+                                    <option value="emergency">Emergency</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                <input type="text" id="hotlineDesc" class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    Add Hotline
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Phone</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Category</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Description</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminHotlinesTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Evacuation Centers Page -->
+            <div id="adminEvacuation" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Evacuation Centers Management</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                        <h3 class="font-heading text-xl font-semibold mb-4">Add New Evacuation Center</h3>
+                        <form onsubmit="addEvacuationCenter(event)" class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                                <input type="text" id="evacName" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                                <input type="text" id="evacAddress" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Capacity</label>
+                                <input type="number" id="evacCapacity" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Current Occupancy</label>
+                                <input type="number" id="evacOccupancy" class="w-full px-4 py-2 border rounded-lg" value="0">
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    Add Evacuation Center
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Address</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Capacity</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Occupancy</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminEvacuationTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin User Accounts Page -->
+            <div id="adminUsers" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">User Accounts Management</h2>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <input type="text" id="userSearch" onkeyup="searchUsers()" placeholder="Search users..." class="w-full md:w-1/3 px-4 py-2 border rounded-lg">
+                        <button onclick="showCreateUserForm()" class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add User
+                        </button>
+                    </div>
+                    
+                    <!-- Create/Edit User Form -->
+                    <div id="userForm" class="hidden bg-white rounded-xl shadow-sm p-6 mb-6">
+                        <h3 id="userFormTitle" class="font-heading text-xl font-semibold mb-4">Create User</h3>
+                        <form onsubmit="saveUser(event)" class="space-y-4">
+                            <input type="hidden" id="editUserId">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
+                                    <input type="text" id="userFirstName" required class="w-full px-4 py-2 border rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
+                                    <input type="text" id="userLastName" required class="w-full px-4 py-2 border rounded-lg">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                <input type="email" id="userEmail" required class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                                <input type="text" id="userPassword" placeholder="Leave empty to keep current password" class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                    <input type="text" id="userPhone" class="w-full px-4 py-2 border rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                                    <select id="userRole" class="w-full px-4 py-2 border rounded-lg">
+                                        <option value="resident">Resident</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                                <input type="text" id="userAddress" class="w-full px-4 py-2 border rounded-lg">
+                            </div>
+                            <div class="flex gap-4">
+                                <button type="button" onclick="hideUserForm()" class="px-4 py-2 border rounded-lg hover:bg-slate-50">Cancel</button>
+                                <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">Save User</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Email</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Phone</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Address</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Role</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Created</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Business Permits Page -->
+            <div id="adminBusinessPermits" class="page">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <h2 class="font-heading text-3xl font-bold text-slate-800 mb-8">Business Permit Applications</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Business Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Owner</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Address</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminBusinessTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let token = localStorage.getItem('token');
+        const API_URL = '/api';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // Initially hide main content and show login page
+            const mainContent = document.getElementById('mainContent');
+            const loginPage = document.getElementById('loginPage');
+            if (mainContent) mainContent.classList.add('hidden');
+            if (loginPage) loginPage.classList.remove('hidden');
+            
+            loadInitialData();
+            const savedToken = localStorage.getItem('token');
+            if (savedToken) {
+                token = savedToken;
+                checkAuth();
+            }
+        });
+
+        async function loadInitialData() {
+            await Promise.all([
+                loadAnnouncements(),
+                loadEvents(),
+                loadOfficials(),
+                loadBusinesses(),
+                loadBudget(),
+                loadOrdinances(),
+                loadHotlines(),
+                loadEvacuationCenters(),
+                loadDocumentTypes()
+            ]);
+            
+            if (token) {
+                await loadUserData();
+            }
+        }
+
+        async function checkAuth() {
+            try {
+                const res = await fetch(`${API_URL}/auth/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    currentUser = await res.json();
+                    updateUIForLoggedIn();
+                } else {
+                    logout();
+                }
+            } catch (e) {
+                logout();
+            }
+        }
+
+        function updateUIForLoggedIn() {
+            const loginBtn = document.getElementById('loginBtn');
+            const mainNav = document.getElementById('mainNav');
+            const mainContent = document.getElementById('mainContent');
+            const loginPage = document.getElementById('loginPage');
+            const registerPage = document.getElementById('registerPage');
+            
+            if (loginBtn) loginBtn.classList.add('hidden');
+            if (mainNav) mainNav.classList.remove('hidden');
+            if (mainContent) mainContent.classList.remove('hidden');
+            if (loginPage) loginPage.classList.add('hidden');
+            if (registerPage) registerPage.classList.add('hidden');
+            
+            // Show home page
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const homePage = document.getElementById('home');
+            if (homePage) homePage.classList.add('active');
+            
+            if (currentUser.role === 'admin') {
+                const sidebar = document.getElementById('sidebar');
+                const residentSidebar = document.getElementById('residentSidebar');
+                const mainContent = document.getElementById('mainContent');
+                if (sidebar) sidebar.classList.remove('hidden');
+                if (residentSidebar) residentSidebar.classList.add('hidden');
+                if (mainContent) mainContent.classList.add('md:ml-64');
+                
+                // Show admin nav links
+                const navLinks = document.getElementById('navLinks');
+                if (navLinks) navLinks.classList.remove('hidden');
+                
+                ['navHome', 'navProfile', 'navDirectory', 'navTransparency', 'navCommunity', 
+                 'navEmergency', 'sidebarDashboard', 'sidebarAdminDocs', 
+                 'sidebarAdminOfficials', 'sidebarAdminOrdinances', 'sidebarAdminProjects', 
+                 'sidebarAdminEvents', 'sidebarAdminAnnouncements', 'sidebarAdminHotlines', 
+                 'sidebarAdminEvacuation', 'sidebarAdminUsers', 'sidebarAdminBusinessPermits'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('hidden');
+                });
+                
+                // Update sidebar user info
+                const sidebarUserName = document.getElementById('sidebarUserName');
+                const sidebarUserInitials = document.getElementById('sidebarUserInitials');
+                const sidebarUserRole = document.getElementById('sidebarUserRole');
+                if (sidebarUserName) sidebarUserName.textContent = `${currentUser.first_name} ${currentUser.last_name}`;
+                if (sidebarUserInitials) sidebarUserInitials.textContent = `${currentUser.first_name[0]}${currentUser.last_name[0]}`;
+                if (sidebarUserRole) sidebarUserRole.textContent = 'Admin';
+                
+                loadAdminData();
+            } else {
+                // Resident
+                const sidebar = document.getElementById('sidebar');
+                const residentSidebar = document.getElementById('residentSidebar');
+                const mainContent = document.getElementById('mainContent');
+                if (sidebar) sidebar.classList.add('hidden');
+                if (residentSidebar) residentSidebar.classList.remove('hidden');
+                if (mainContent) mainContent.classList.add('md:ml-64');
+                
+                const navLabel = document.getElementById('navLabel');
+                if (navLabel) navLabel.classList.remove('hidden');
+                
+                // Hide admin nav links for residents
+                const navLinks = document.getElementById('navLinks');
+                if (navLinks) navLinks.classList.add('hidden');
+                
+                ['navHome', 'navDocuments', 'navProfile', 'navDirectory', 'navTransparency', 'navCommunity', 
+                 'navEmergency', 'navBusiness', 'navIncidents'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+                
+                // Update resident sidebar user info
+                const residentUserName = document.getElementById('residentSidebarUserName');
+                const residentUserInitials = document.getElementById('residentSidebarUserInitials');
+                const residentUserRole = document.getElementById('residentSidebarUserRole');
+                if (residentUserName) residentUserName.textContent = `${currentUser.first_name} ${currentUser.last_name}`;
+                if (residentUserInitials) residentUserInitials.textContent = `${currentUser.first_name[0]}${currentUser.last_name[0]}`;
+                if (residentUserRole) residentUserRole.textContent = 'Resident';
+            }
+            
+            loadMyDocuments();
+            loadMyIncidents();
+            loadDocumentTypes();
+            loadDashboardStats();
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        function toggleSidebarUserMenu(type) {
+            const dropdownId = type === 'admin' ? 'sidebarAdminUserDropdown' : 'sidebarResidentUserDropdown';
+            document.getElementById(dropdownId).classList.toggle('hidden');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('residentSidebar').classList.remove('open');
+            document.getElementById('overlay').classList.add('hidden');
+        }
+
+        document.getElementById('menuBtn')?.addEventListener('click', () => {
+            if (currentUser && currentUser.role === 'admin') {
+                document.getElementById('sidebar').classList.add('open');
+            } else {
+                document.getElementById('residentSidebar').classList.add('open');
+            }
+            document.getElementById('overlay').classList.remove('hidden');
+        });
+
+        function showLogin() {
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('registerPage').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('registerPage').classList.remove('hidden');
+        }
+
+        function showPage(pageId) {
+            const adminPages = ['dashboard', 'adminDocServices', 'adminOfficials', 'adminOrdinances', 'adminProjects', 'adminEvents', 'adminAnnouncements', 'adminHotlines', 'adminEvacuation', 'adminUsers', 'adminBusinessPermits'];
+            
+            if (adminPages.includes(pageId) && currentUser && currentUser.role !== 'admin') {
+                alert('Access denied. Admin only.');
+                showPage('home');
+                return;
+            }
+            
+            if (!token && ['documents', 'incidents', 'business', 'profile', 'dashboard'].includes(pageId)) {
+                showPage('login');
+                return;
+            }
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+            closeSidebar();
+            
+            if (pageId === 'documents') {
+                loadMyDocuments();
+                loadDocumentTypes();
+            }
+            if (pageId === 'business') loadMyBusinesses();
+            if (pageId === 'incidents') loadMyIncidents();
+            if (pageId === 'dashboard') {
+                loadDashboardStats();
+                loadGcashSettings();
+            }
+            if (pageId === 'adminDocServices') loadDocTypes();
+            if (pageId === 'adminOfficials') loadAdminOfficials();
+            if (pageId === 'adminOrdinances') loadAdminOrdinances();
+            if (pageId === 'adminProjects') loadAdminProjects();
+            if (pageId === 'adminEvents') loadAdminEvents();
+            if (pageId === 'adminAnnouncements') loadAdminAnnouncements();
+            if (pageId === 'adminHotlines') loadAdminHotlines();
+            if (pageId === 'adminEvacuation') loadAdminEvacuation();
+            if (pageId === 'adminUsers') loadAdminUsers();
+            if (pageId === 'adminBusinessPermits') loadAdminBusiness();
+        }
+
+        // Auth Functions
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    location.reload();
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (e) {
+                alert('Login failed: ' + e.message);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const first_name = document.getElementById('regFirstName').value;
+            const last_name = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const address = document.getElementById('regAddress').value;
+            const password = document.getElementById('regPassword').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name, last_name, email, phone, address, password })
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    token = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('token', token);
+                    updateUIForLoggedIn();
+                    showPage('home');
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (e) {
+                alert('Registration failed');
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                const res = await fetch(`${API_URL}/auth/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    currentUser = await res.json();
+                    document.getElementById('profileFirstName').value = currentUser.first_name || '';
+                    document.getElementById('profileLastName').value = currentUser.last_name || '';
+                    document.getElementById('profileEmail').value = currentUser.email || '';
+                    document.getElementById('profilePhone').value = currentUser.phone || '';
+                    document.getElementById('profileAddress').value = currentUser.address || '';
+                    updateUIForLoggedIn();
+                }
+            } catch (e) {}
+        }
+
+        async function updateProfile(e) {
+            e.preventDefault();
+            const first_name = document.getElementById('profileFirstName').value;
+            const last_name = document.getElementById('profileLastName').value;
+            const phone = document.getElementById('profilePhone').value;
+            const address = document.getElementById('profileAddress').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/profile`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ first_name, last_name, phone, address })
+                });
+                
+                if (res.ok) {
+                    currentUser = await res.json();
+                    alert('Profile updated successfully');
+                }
+            } catch (e) {
+                alert('Failed to update profile');
+            }
+        }
+
+        // Document Functions
+        let documentTypesData = [];
+
+        async function loadDocumentTypes() {
+            try {
+                const res = await fetch(`${API_URL}/document-types`);
+                documentTypesData = await res.json();
+                renderDocumentTypes();
+            } catch (e) {}
+        }
+
+        function renderDocumentTypes() {
+            const container = document.getElementById('documentTypesList');
+            console.log('Container:', container, 'Data:', documentTypesData.length);
+            if (!container) {
+                setTimeout(renderDocumentTypes, 100);
+                return;
+            }
+            
+            if (!documentTypesData || documentTypesData.length === 0) {
+                container.innerHTML = '<p class="text-slate-500">Loading document types...</p>';
+                return;
+            }
+            
+            const icons = {
+                'barangay_clearance': 'file-check',
+                'certificate_of_indigency': 'heart-handshake',
+                'certificate_of_residency': 'home',
+                'business_permit': 'store',
+                'cedula': 'id-card',
+                'building_permit': 'hammer'
+            };
+            
+            const colors = ['bg-primary-100', 'bg-red-100', 'bg-blue-100', 'bg-amber-100', 'bg-purple-100', 'bg-teal-100', 'bg-pink-100', 'bg-indigo-100'];
+            
+            container.innerHTML = documentTypesData.filter(t => t.is_active == 1).map((t, i) => `
+                <div onclick="selectDocumentType('${t.slug}', '${t.name}', ${t.fee})" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary-500">
+                    <div class="w-12 h-12 ${colors[i % colors.length]} rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="${icons[t.slug] || 'file-text'}" class="w-6 h-6 text-primary-700"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-lg">${t.name}</h3>
+                    <p class="text-slate-600 text-sm mt-1">${t.description || ''}</p>
+                    <p class="text-primary-600 font-semibold mt-2">₱${t.fee || 0}.00</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function selectDocumentType(type, name, fee) {
+            document.getElementById('docType').value = type;
+            document.getElementById('selectedDocType').textContent = name || type.replace(/_/g, ' ').toUpperCase();
+            document.getElementById('docFee').textContent = `₱${fee || 0}.00`;
+            document.getElementById('docApplicantName').value = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : '';
+            document.getElementById('documentForm').classList.remove('hidden');
+            updatePaymentInfo();
+            window.scrollTo(0, document.getElementById('documentForm').offsetTop);
+        }
+
+        function updatePaymentInfo() {
+            const method = document.getElementById('docPaymentMethod').value;
+            const gcashInfo = document.getElementById('gcashInfo');
+            if (method === 'gcash') {
+                gcashInfo.classList.remove('hidden');
+                loadGcashNumber();
+            } else {
+                gcashInfo.classList.add('hidden');
+            }
+        }
+
+        async function loadGcashNumber() {
+            try {
+                const res = await fetch(`${API_URL}/settings/gcash`);
+                const data = await res.json();
+                document.getElementById('gcashNumber').textContent = data.gcash_number || 'Not set';
+            } catch (e) {}
+        }
+
+        function cancelDocument() {
+            document.getElementById('documentForm').classList.add('hidden');
+        }
+
+        async function submitDocument(e) {
+            e.preventDefault();
+            const type = document.getElementById('docType').value;
+            const applicant_name = document.getElementById('docApplicantName').value;
+            const description = document.getElementById('docDescription').value;
+            const payment_method = document.getElementById('docPaymentMethod').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/documents`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ type, applicant_name, description, payment_method })
+                });
+                
+                if (res.ok) {
+                    alert('Document application submitted successfully!');
+                    document.getElementById('docApplicantName').value = '';
+                    document.getElementById('docDescription').value = '';
+                    cancelDocument();
+                    loadMyDocuments();
+                }
+            } catch (e) {
+                alert('Failed to submit application');
+            }
+        }
+
+        let myDocumentsData = [];
+
+        async function loadMyDocuments() {
+            try {
+                const res = await fetch(`${API_URL}/documents`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const docs = await res.json();
+                myDocumentsData = docs;
+                
+                filterMyDocs();
+            } catch (e) {}
+        }
+
+        function filterMyDocs() {
+            const search = document.getElementById('myDocsSearch').value.toLowerCase();
+            const filtered = myDocumentsData.filter(d => 
+                (d.tracking_code || '').toLowerCase().includes(search) ||
+                (d.applicant_name || '').toLowerCase().includes(search) ||
+                (d.type || '').toLowerCase().includes(search) ||
+                (d.status || '').toLowerCase().includes(search)
+            );
+            
+            const tbody = document.getElementById('myDocuments');
+            tbody.innerHTML = filtered.map(d => `
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4 font-mono text-sm">${d.tracking_code || 'N/A'}</td>
+                    <td class="px-6 py-4">${d.applicant_name || '-'}</td>
+                    <td class="px-6 py-4 capitalize">${d.type.replace(/_/g, ' ')}</td>
+                    <td class="px-6 py-4">₱${d.fee || 0}</td>
+                    <td class="px-6 py-4 capitalize text-sm">${d.payment_method ? d.payment_method.replace(/_/g, ' ') : '-'}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(d.status)}">${d.status}</span></td>
+                    <td class="px-6 py-4 text-sm text-slate-600">${d.remarks || '-'}</td>
+                    <td class="px-6 py-4 text-sm text-slate-500">${new Date(d.created_at).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="deleteMyDocument(${d.id})" class="text-red-600 hover:text-red-800">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function deleteMyDocument(id) {
+            if (!confirm('Are you sure you want to delete this document?')) return;
+            try {
+                const res = await fetch(`${API_URL}/documents/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    alert('Document deleted!');
+                    loadMyDocuments();
+                }
+            } catch (e) {
+                alert('Failed to delete document');
+            }
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'pending': 'bg-amber-100 text-amber-700',
+                'processing': 'bg-blue-100 text-blue-700',
+                'ready': 'bg-green-100 text-green-700',
+                'completed': 'bg-slate-100 text-slate-700'
+            };
+            return classes[status] || 'bg-slate-100 text-slate-700';
+        }
+
+        async function trackDocument(e) {
+            e.preventDefault();
+            const code = document.getElementById('trackingCode').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/search/documents?tracking_code=${code}`);
+                const doc = await res.json();
+                
+                if (doc.error) {
+                    alert('Document not found');
+                    return;
+                }
+                
+                document.getElementById('trackType').textContent = doc.type.replace(/_/g, ' ').toUpperCase();
+                document.getElementById('trackStatus').textContent = doc.status;
+                document.getElementById('trackStatus').className = `px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(doc.status)}`;
+                document.getElementById('trackPayment').textContent = doc.payment_status;
+                document.getElementById('trackPayment').className = `px-3 py-1 rounded-full text-sm font-medium ${doc.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`;
+                document.getElementById('trackFee').textContent = `₱${doc.fee || 0}`;
+                document.getElementById('trackingResult').classList.remove('hidden');
+            } catch (e) {
+                alert('Failed to track document');
+            }
+        }
+
+        // Incident Functions
+        async function submitIncident(e) {
+            e.preventDefault();
+            const type = document.getElementById('incidentType').value;
+            const location = document.getElementById('incidentLocation').value;
+            const description = document.getElementById('incidentDescription').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/incidents`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ type, location, description })
+                });
+                
+                if (res.ok) {
+                    alert('Incident reported successfully!');
+                    document.getElementById('incidentLocation').value = '';
+                    document.getElementById('incidentDescription').value = '';
+                    loadMyIncidents();
+                }
+            } catch (e) {
+                alert('Failed to report incident');
+            }
+        }
+
+        async function loadMyIncidents() {
+            try {
+                const res = await fetch(`${API_URL}/incidents`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const incidents = await res.json();
+                
+                const container = document.getElementById('myIncidents');
+                container.innerHTML = incidents.map(i => `
+                    <div class="bg-white rounded-lg shadow-sm p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold capitalize">${i.type.replace(/_/g, ' ')}</p>
+                                <p class="text-sm text-slate-500">${i.location}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${i.status === 'open' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${i.status}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-2">${i.description}</p>
+                        <p class="text-xs text-slate-400 mt-2">${new Date(i.created_at).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // Business Functions
+        async function submitBusiness(e) {
+            e.preventDefault();
+            const name = document.getElementById('businessName').value;
+            const type = document.getElementById('businessType').value;
+            const address = document.getElementById('businessAddress').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/businesses`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, type, address })
+                });
+                
+                if (res.ok) {
+                    alert('Business permit application submitted!');
+                    document.getElementById('businessName').value = '';
+                    document.getElementById('businessAddress').value = '';
+                    loadBusinesses();
+                }
+            } catch (e) {
+                alert('Failed to submit application');
+            }
+        }
+
+        async function loadBusinesses() {
+            try {
+                const res = await fetch(`${API_URL}/businesses`);
+                const businesses = await res.json();
+                
+                const tbody = document.getElementById('businessesList');
+                tbody.innerHTML = businesses.map(b => `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-medium">${b.name}</td>
+                        <td class="px-6 py-4 capitalize">${b.type}</td>
+                        <td class="px-6 py-4">${b.address}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${b.permit_status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${b.permit_status}</span></td>
+                    </tr>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // Admin Functions
+        async function loadGcashSettings() {
+            try {
+                const res = await fetch(`${API_URL}/settings/gcash`);
+                const data = await res.json();
+                document.getElementById('adminGcashNumber').value = data.gcash_number || '';
+            } catch (e) {}
+        }
+
+        async function saveGcashNumber() {
+            const gcash_number = document.getElementById('adminGcashNumber').value;
+            try {
+                const res = await fetch(`${API_URL}/settings/gcash`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ gcash_number })
+                });
+                if (res.ok) {
+                    alert('GCash number saved!');
+                }
+            } catch (e) {
+                alert('Failed to save GCash number');
+            }
+        }
+
+        let adminDocumentsData = [];
+
+        async function loadDashboardStats() {
+            try {
+                const res = await fetch(`${API_URL}/dashboard/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const stats = await res.json();
+                
+                document.getElementById('statResidents').textContent = stats.totalResidents || 0;
+                document.getElementById('statPending').textContent = stats.pendingDocuments || 0;
+                document.getElementById('statIncidents').textContent = stats.openIncidents || 0;
+                document.getElementById('statBusinesses').textContent = stats.totalBusinesses || 0;
+                
+                adminDocumentsData = stats.recentDocuments || [];
+                filterAdminDocs();
+                
+                // Recent incidents
+                const incBody = document.getElementById('adminIncidents');
+                incBody.innerHTML = (stats.recentIncidents || []).map(i => `
+                    <tr>
+                        <td class="px-4 py-3 text-sm">${new Date(i.created_at).toLocaleDateString()}</td>
+                        <td class="px-4 py-3 capitalize">${i.type.replace(/_/g, ' ')}</td>
+                        <td class="px-4 py-3">${i.location}</td>
+                        <td class="px-4 py-3">${i.first_name} ${i.last_name}</td>
+                        <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-medium ${i.status === 'open' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${i.status}</span></td>
+                        <td class="px-4 py-3">
+                            <select onchange="updateIncidentStatus(${i.id}, this.value)" class="text-sm border rounded px-2 py-1">
+                                <option value="open" ${i.status === 'open' ? 'selected' : ''}>Open</option>
+                                <option value="investigating" ${i.status === 'investigating' ? 'selected' : ''}>Investigating</option>
+                                <option value="resolved" ${i.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                                <option value="closed" ${i.status === 'closed' ? 'selected' : ''}>Closed</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {}
+        }
+
+        function filterAdminDocs() {
+            const search = document.getElementById('adminDocsSearch').value.toLowerCase();
+            const filtered = adminDocumentsData.filter(d => 
+                (d.tracking_code || '').toLowerCase().includes(search) ||
+                (d.applicant_name || '').toLowerCase().includes(search) ||
+                (d.first_name || '').toLowerCase().includes(search) ||
+                (d.last_name || '').toLowerCase().includes(search) ||
+                (d.type || '').toLowerCase().includes(search) ||
+                (d.status || '').toLowerCase().includes(search)
+            );
+            
+            const docsBody = document.getElementById('adminDashboardDocs');
+            docsBody.innerHTML = filtered.map(d => `
+                <tr>
+                    <td class="px-4 py-3 font-mono text-sm">${d.tracking_code || 'N/A'}</td>
+                    <td class="px-4 py-3">${d.applicant_name || d.first_name + ' ' + d.last_name}</td>
+                    <td class="px-4 py-3 capitalize">${d.type.replace(/_/g, ' ')}</td>
+                    <td class="px-4 py-3">₱${d.fee || 0}</td>
+                    <td class="px-4 py-3 capitalize text-sm">${d.payment_method ? d.payment_method.replace(/_/g, ' ') : '-'}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(d.status)}">${d.status}</span></td>
+                    <td class="px-4 py-3">
+                        <input type="text" value="${d.remarks || ''}" 
+                            onchange="updateDocRemarks(${d.id}, this.value)"
+                            placeholder="Add remarks..." 
+                            class="text-sm border rounded px-2 py-1 w-full">
+                    </td>
+                    <td class="px-4 py-3">
+                        <select onchange="updateDocStatus(${d.id}, this.value)" class="text-sm border rounded px-2 py-1">
+                            <option value="pending" ${d.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="processing" ${d.status === 'processing' ? 'selected' : ''}>Processing</option>
+                            <option value="ready" ${d.status === 'ready' ? 'selected' : ''}>Ready</option>
+                            <option value="completed" ${d.status === 'completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-3">
+                        <button onclick="deleteDocument(${d.id})" class="text-red-600 hover:text-red-800">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function deleteDocument(id) {
+            if (!confirm('Are you sure you want to delete this document?')) return;
+            try {
+                const res = await fetch(`${API_URL}/documents/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    alert('Document deleted!');
+                    loadDashboardStats();
+                }
+            } catch (e) {
+                alert('Failed to delete document');
+            }
+        }
+
+        async function updateDocStatus(id, status) {
+            try {
+                await fetch(`${API_URL}/documents/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+            } catch (e) {}
+        }
+
+        async function updateDocRemarks(id, remarks) {
+            try {
+                const res = await fetch(`${API_URL}/documents/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ remarks })
+                });
+                if (res.ok) {
+                    alert('Remarks saved!');
+                    loadDashboardStats();
+                }
+            } catch (e) {
+                alert('Failed to save remarks');
+            }
+        }
+
+        async function updateIncidentStatus(id, status) {
+            try {
+                await fetch(`${API_URL}/incidents/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+            } catch (e) {}
+        }
+
+        // Data Loading Functions
+        async function loadAnnouncements() {
+            try {
+                const res = await fetch(`${API_URL}/announcements`);
+                const data = await res.json();
+                
+                // Home page announcements
+                document.getElementById('announcementsList').innerHTML = data.slice(0, 3).map(a => `
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 ${a.priority === 'high' ? 'border-red-500' : 'border-primary-500'}">
+                        <span class="text-xs font-medium text-slate-500 uppercase">${a.category}</span>
+                        <h3 class="font-heading font-semibold text-lg mt-2">${a.title}</h3>
+                        <p class="text-slate-600 text-sm mt-2">${a.content.substring(0, 100)}...</p>
+                        <p class="text-xs text-slate-400 mt-4">${new Date(a.created_at).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+                
+                // Community page announcements
+                document.getElementById('communityAnnouncements').innerHTML = data.map(a => `
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 ${a.priority === 'high' ? 'border-red-500' : 'border-primary-500'}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-xs font-medium text-slate-500 uppercase">${a.category}</span>
+                                <h3 class="font-heading font-semibold text-lg mt-1">${a.title}</h3>
+                            </div>
+                            ${a.priority === 'high' ? '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded">Urgent</span>' : ''}
+                        </div>
+                        <p class="text-slate-600 mt-3">${a.content}</p>
+                        <p class="text-xs text-slate-400 mt-4">${new Date(a.created_at).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        async function loadEvents() {
+            try {
+                const res = await fetch(`${API_URL}/events`);
+                const data = await res.json();
+                
+                document.getElementById('eventsPreview').innerHTML = data.slice(0, 3).map(e => `
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-primary-600 text-white p-4">
+                            <p class="text-2xl font-bold">${new Date(e.event_date).getDate()}</p>
+                            <p class="text-sm">${new Date(e.event_date).toLocaleDateString('en-US', { month: 'short' })}</p>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-heading font-semibold">${e.title}</h3>
+                            <p class="text-sm text-slate-500 mt-1">${e.location}</p>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('eventsCalendar').innerHTML = data.map(e => `
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-primary-600 text-white p-4 text-center">
+                            <p class="text-3xl font-bold">${new Date(e.event_date).getDate()}</p>
+                            <p class="text-sm">${new Date(e.event_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+                        </div>
+                        <div class="p-4">
+                            <span class="text-xs font-medium text-primary-600 uppercase">${e.event_type}</span>
+                            <h3 class="font-heading font-semibold text-lg mt-1">${e.title}</h3>
+                            <p class="text-sm text-slate-500 mt-2">${e.description}</p>
+                            <p class="text-sm text-slate-500 mt-2 flex items-center gap-1">
+                                <i data-lucide="map-pin" class="w-4 h-4"></i> ${e.location}
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        async function loadOfficials() {
+            try {
+                const res = await fetch(`${API_URL}/officials`);
+                const data = await res.json();
+                
+                document.getElementById('officialsList').innerHTML = data.map(o => `
+                    <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                        <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="user" class="w-10 h-10 text-primary-700"></i>
+                        </div>
+                        <h3 class="font-heading font-semibold">${o.name}</h3>
+                        <p class="text-primary-600 text-sm">${o.position}</p>
+                        <div class="mt-4 space-y-2 text-sm text-slate-500">
+                            <p class="flex items-center justify-center gap-2">
+                                <i data-lucide="phone" class="w-4 h-4"></i> ${o.phone}
+                            </p>
+                            <p class="flex items-center justify-center gap-2">
+                                <i data-lucide="clock" class="w-4 h-4"></i> ${o.office_hours}
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+                
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function loadBudget() {
+            try {
+                const res = await fetch(`${API_URL}/budget`);
+                const data = await res.json();
+                
+                let total = 0;
+                document.getElementById('budgetTable').innerHTML = data.map(b => {
+                    total += b.amount;
+                    return `
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-6 py-4 font-medium">${b.title}</td>
+                            <td class="px-6 py-4 capitalize">${b.category}</td>
+                            <td class="px-6 py-4">₱${b.amount.toLocaleString()}</td>
+                            <td class="px-6 py-4 text-slate-500">${new Date(b.report_date).toLocaleDateString()}</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                document.getElementById('totalBudget').textContent = `₱${total.toLocaleString()}`;
+                document.getElementById('spentBudget').textContent = `₱${total.toLocaleString()}`;
+            } catch (e) {}
+        }
+
+        async function loadOrdinances() {
+            try {
+                const res = await fetch(`${API_URL}/ordinances`);
+                const data = await res.json();
+                
+                document.getElementById('ordinancesTable').innerHTML = data.map(o => `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-mono text-sm">${o.ordinance_number || 'N/A'}</td>
+                        <td class="px-6 py-4 font-medium">${o.title}</td>
+                        <td class="px-6 py-4 capitalize">${o.category || 'general'}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${o.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}">${o.status || 'active'}</span></td>
+                    </tr>
+                `).join('');
+            } catch (e) {}
+        }
+
+        async function loadHotlines() {
+            try {
+                const res = await fetch(`${API_URL}/hotlines`);
+                const data = await res.json();
+                
+                const categoryColors = {
+                    'security': 'bg-blue-100 text-blue-700',
+                    'health': 'bg-red-100 text-red-700',
+                    'fire': 'bg-orange-100 text-orange-700',
+                    'police': 'bg-purple-100 text-purple-700',
+                    'medical': 'bg-green-100 text-green-700'
+                };
+                
+                document.getElementById('hotlinesList').innerHTML = data.map(h => `
+                    <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
+                        <div class="w-12 h-12 ${categoryColors[h.category] || 'bg-slate-100'} rounded-lg flex items-center justify-center">
+                            <i data-lucide="phone" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">${h.name}</p>
+                            <p class="text-primary-600 font-bold">${h.phone}</p>
+                        </div>
+                    </div>
+                `).join('');
+                
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function loadEvacuationCenters() {
+            try {
+                const res = await fetch(`${API_URL}/evacuation-centers`);
+                const data = await res.json();
+                
+                document.getElementById('evacuationList').innerHTML = data.map(c => {
+                    const percentage = (c.current_occupancy / c.capacity) * 100;
+                    return `
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h4 class="font-heading font-semibold text-lg">${c.name}</h4>
+                            <p class="text-sm text-slate-500 mt-1">${c.address}</p>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Capacity</span>
+                                    <span>${c.current_occupancy} / ${c.capacity}</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full ${percentage > 80 ? 'bg-red-500' : percentage > 50 ? 'bg-amber-500' : 'bg-green-500'}" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {}
+        }
+
+        function showTransparencyTab(tab) {
+            document.querySelectorAll('.transparency-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById(`${tab}Tab`).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-primary-600', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('bg-primary-600', 'text-white');
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('bg-slate-100', 'text-slate-600');
+        }
+
+        async function loadAdminData() {
+            await Promise.all([
+                loadDocTypes(),
+                loadAdminOfficials(),
+                loadAdminOrdinances(),
+                loadAdminProjects(),
+                loadAdminEvents(),
+                loadAdminAnnouncements(),
+                loadAdminHotlines(),
+                loadAdminEvacuation(),
+                loadAdminUsers()
+            ]);
+        }
+
+        // Document Types Management
+        async function loadDocTypes() {
+            try {
+                const res = await fetch(`${API_URL}/document-types`);
+                const types = await res.json();
+                const tbody = document.getElementById('docTypesTable');
+                tbody.innerHTML = types.map(t => `
+                    <tr>
+                        <td class="px-4 py-3"><input type="text" value="${t.name}" onchange="updateDocType(${t.id}, 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${t.description || ''}" onchange="updateDocType(${t.id}, 'description', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="number" value="${t.fee}" onchange="updateDocType(${t.id}, 'fee', this.value)" class="border rounded px-2 py-1 w-24"></td>
+                        <td class="px-4 py-3">
+                            <select onchange="updateDocType(${t.id}, 'is_active', this.value)" class="border rounded px-2 py-1">
+                                <option value="1" ${t.is_active == 1 ? 'selected' : ''}>Active</option>
+                                <option value="0" ${t.is_active == 0 ? 'selected' : ''}>Inactive</option>
+                            </select>
+                        </td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteDocType(${t.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addDocumentType(e) {
+            e.preventDefault();
+            const name = document.getElementById('docTypeName').value;
+            const slug = document.getElementById('docTypeSlug').value;
+            const description = document.getElementById('docTypeDesc').value;
+            const fee = parseFloat(document.getElementById('docTypeFee').value);
+            
+            try {
+                const res = await fetch(`${API_URL}/document-types`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ name, slug, description, fee })
+                });
+                if (res.ok) {
+                    alert('Document type added!');
+                    e.target.reset();
+                    loadDocTypes();
+                }
+            } catch (e) {}
+        }
+
+        async function updateDocType(id, field, value) {
+            const type = (await fetch(`${API_URL}/document-types`).then(r => r.json())).find(t => t.id === id);
+            if (!type) return;
+            type[field] = field === 'fee' || field === 'is_active' ? parseFloat(value) : value;
+            await fetch(`${API_URL}/document-types/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(type)
+            });
+        }
+
+        async function deleteDocType(id) {
+            if (!confirm('Delete this document type?')) return;
+            await fetch(`${API_URL}/document-types/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadDocTypes();
+        }
+
+        // Officials Management
+        async function loadAdminOfficials() {
+            try {
+                const res = await fetch(`${API_URL}/officials`);
+                const officials = await res.json();
+                const tbody = document.getElementById('adminOfficialsTable');
+                tbody.innerHTML = officials.map(o => `
+                    <tr>
+                        <td class="px-4 py-3"><input type="text" value="${o.name}" onchange="updateOfficial(${o.id}, 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${o.position}" onchange="updateOfficial(${o.id}, 'position', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${o.phone || ''}" onchange="updateOfficial(${o.id}, 'phone', this.value)" class="border rounded px-2 py-1 w-32"></td>
+                        <td class="px-4 py-3"><input type="email" value="${o.email || ''}" onchange="updateOfficial(${o.id}, 'email', this.value)" class="border rounded px-2 py-1 w-40"></td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteOfficial(${o.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addOfficial(e) {
+            e.preventDefault();
+            const name = document.getElementById('officialName').value;
+            const position = document.getElementById('officialPosition').value;
+            const phone = document.getElementById('officialPhone').value;
+            const email = document.getElementById('officialEmail').value;
+            const office_hours = document.getElementById('officialHours').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/officials`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ name, position, phone, email, office_hours })
+                });
+                if (res.ok) {
+                    alert('Official added!');
+                    e.target.reset();
+                    loadAdminOfficials();
+                    loadOfficials();
+                }
+            } catch (e) {}
+        }
+
+        async function updateOfficial(id, field, value) {
+            const official = (await fetch(`${API_URL}/officials`).then(r => r.json())).find(o => o.id === id);
+            if (!official) return;
+            official[field] = value;
+            await fetch(`${API_URL}/officials/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(official)
+            });
+            loadOfficials();
+        }
+
+        async function deleteOfficial(id) {
+            if (!confirm('Delete this official?')) return;
+            await fetch(`${API_URL}/officials/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadAdminOfficials();
+            loadOfficials();
+        }
+
+        // Ordinances Management
+        async function loadAdminOrdinances() {
+            try {
+                const res = await fetch(`${API_URL}/ordinances`);
+                const ordinances = await res.json();
+                const tbody = document.getElementById('adminOrdinancesTable');
+                tbody.innerHTML = ordinances.map(o => `
+                    <tr>
+                        <td class="px-4 py-3 font-mono text-sm">${o.ordinance_number}</td>
+                        <td class="px-4 py-3">${o.title}</td>
+                        <td class="px-4 py-3 capitalize">${o.category}</td>
+                        <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${o.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}">${o.status}</span></td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteOrdinance(${o.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addOrdinance(e) {
+            e.preventDefault();
+            const title = document.getElementById('ordinanceTitle').value;
+            const ordinance_number = document.getElementById('ordinanceNumber').value;
+            const category = document.getElementById('ordinanceCategory').value;
+            const status = document.getElementById('ordinanceStatus').value;
+            const description = document.getElementById('ordinanceDesc').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/ordinances`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ title, ordinance_number, category, status, description })
+                });
+                if (res.ok) {
+                    alert('Ordinance added!');
+                    e.target.reset();
+                    loadAdminOrdinances();
+                    loadOrdinances();
+                }
+            } catch (e) {}
+        }
+
+        async function deleteOrdinance(id) {
+            if (!confirm('Delete this ordinance?')) return;
+            await fetch(`${API_URL}/ordinances/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadAdminOrdinances();
+            loadOrdinances();
+        }
+
+        // Projects Management
+        async function loadAdminProjects() {
+            try {
+                const res = await fetch(`${API_URL}/projects`);
+                const projects = await res.json();
+                const tbody = document.getElementById('adminProjectsTable');
+                tbody.innerHTML = projects.map(p => `
+                    <tr>
+                        <td class="px-4 py-3 font-medium">${p.title}</td>
+                        <td class="px-4 py-3">₱${(p.budget || 0).toLocaleString()}</td>
+                        <td class="px-4 py-3">
+                            <select onchange="updateProject(${p.id}, 'status', this.value)" class="border rounded px-2 py-1">
+                                <option value="planning" ${p.status === 'planning' ? 'selected' : ''}>Planning</option>
+                                <option value="ongoing" ${p.status === 'ongoing' ? 'selected' : ''}>Ongoing</option>
+                                <option value="completed" ${p.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </td>
+                        <td class="px-4 py-3 text-sm">${p.target_date || '-'}</td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteProject(${p.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addProject(e) {
+            e.preventDefault();
+            const title = document.getElementById('projectTitle').value;
+            const budget = parseFloat(document.getElementById('projectBudget').value);
+            const status = document.getElementById('projectStatus').value;
+            const target_date = document.getElementById('projectTarget').value;
+            const description = document.getElementById('projectDesc').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ title, budget, status, target_date, description })
+                });
+                if (res.ok) {
+                    alert('Project added!');
+                    e.target.reset();
+                    loadAdminProjects();
+                }
+            } catch (e) {}
+        }
+
+        async function updateProject(id, field, value) {
+            const project = (await fetch(`${API_URL}/projects`).then(r => r.json())).find(p => p.id === id);
+            if (!project) return;
+            project[field] = field === 'budget' ? parseFloat(value) : value;
+            await fetch(`${API_URL}/projects/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(project)
+            });
+        }
+
+        async function deleteProject(id) {
+            if (!confirm('Delete this project?')) return;
+            await fetch(`${API_URL}/projects/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadAdminProjects();
+        }
+
+        // Events Management
+        async function loadAdminEvents() {
+            try {
+                const res = await fetch(`${API_URL}/events`);
+                const events = await res.json();
+                const tbody = document.getElementById('adminEventsTable');
+                tbody.innerHTML = events.map(e => `
+                    <tr>
+                        <td class="px-4 py-3 font-medium">${e.title}</td>
+                        <td class="px-4 py-3 text-sm">${e.event_date}</td>
+                        <td class="px-4 py-3 text-sm">${e.location}</td>
+                        <td class="px-4 py-3 capitalize">${e.event_type}</td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteEvent(${e.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addEvent(e) {
+            e.preventDefault();
+            const title = document.getElementById('eventTitle').value;
+            const event_date = document.getElementById('eventDate').value;
+            const location = document.getElementById('eventLocation').value;
+            const event_type = document.getElementById('eventType').value;
+            const description = document.getElementById('eventDesc').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/events`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ title, event_date, location, event_type, description })
+                });
+                if (res.ok) {
+                    alert('Event added!');
+                    e.target.reset();
+                    loadAdminEvents();
+                    loadEvents();
+                }
+            } catch (e) {}
+        }
+
+        async function deleteEvent(id) {
+            if (!confirm('Delete this event?')) return;
+            await fetch(`${API_URL}/events/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadAdminEvents();
+            loadEvents();
+        }
+
+        // Announcements Management
+        async function loadAdminAnnouncements() {
+            try {
+                const res = await fetch(`${API_URL}/announcements`);
+                const announcements = await res.json();
+                const tbody = document.getElementById('adminAnnouncementsTable');
+                tbody.innerHTML = announcements.map(a => `
+                    <tr>
+                        <td class="px-4 py-3 font-medium">${a.title}</td>
+                        <td class="px-4 py-3 capitalize">${a.category}</td>
+                        <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${a.priority === 'high' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}">${a.priority}</span></td>
+                        <td class="px-4 py-3 text-sm">${new Date(a.created_at).toLocaleDateString()}</td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteAnnouncement(${a.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addAnnouncement(e) {
+            e.preventDefault();
+            const title = document.getElementById('announcementTitle').value;
+            const category = document.getElementById('announcementCategory').value;
+            const priority = document.getElementById('announcementPriority').value;
+            const content = document.getElementById('announcementContent').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/announcements`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ title, category, priority, content })
+                });
+                if (res.ok) {
+                    alert('Announcement added!');
+                    e.target.reset();
+                    loadAdminAnnouncements();
+                    loadAnnouncements();
+                }
+            } catch (e) {}
+        }
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('Delete this announcement?')) return;
+            await fetch(`${API_URL}/announcements/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadAdminAnnouncements();
+            loadAnnouncements();
+        }
+
+        // Hotlines Management
+        async function loadAdminHotlines() {
+            try {
+                const res = await fetch(`${API_URL}/hotlines`);
+                const hotlines = await res.json();
+                const tbody = document.getElementById('adminHotlinesTable');
+                tbody.innerHTML = hotlines.map(h => `
+                    <tr>
+                        <td class="px-4 py-3 font-medium">${h.name}</td>
+                        <td class="px-4 py-3">${h.phone}</td>
+                        <td class="px-4 py-3 capitalize">${h.category}</td>
+                        <td class="px-4 py-3 text-sm text-slate-500">${h.description}</td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteHotline(${h.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addHotline(e) {
+            e.preventDefault();
+            const name = document.getElementById('hotlineName').value;
+            const phone = document.getElementById('hotlinePhone').value;
+            const category = document.getElementById('hotlineCategory').value;
+            const description = document.getElementById('hotlineDesc').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/hotlines`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ name, phone, category, description })
+                });
+                if (res.ok) {
+                    alert('Hotline added!');
+                    e.target.reset();
+                    loadAdminHotlines();
+                    loadHotlines();
+                }
+            } catch (e) {}
+        }
+
+        async function deleteHotline(id) {
+            if (!confirm('Delete this hotline?')) return;
+            await fetch(`${API_URL}/hotlines/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadAdminHotlines();
+            loadHotlines();
+        }
+
+        // Evacuation Centers Management
+        async function loadAdminEvacuation() {
+            try {
+                const res = await fetch(`${API_URL}/evacuation-centers`);
+                const centers = await res.json();
+                const tbody = document.getElementById('adminEvacuationTable');
+                tbody.innerHTML = centers.map(c => `
+                    <tr>
+                        <td class="px-4 py-3"><input type="text" value="${c.name}" onchange="updateEvacuation(${c.id}, 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${c.address}" onchange="updateEvacuation(${c.id}, 'address', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="number" value="${c.capacity}" onchange="updateEvacuation(${c.id}, 'capacity', this.value)" class="border rounded px-2 py-1 w-20"></td>
+                        <td class="px-4 py-3"><input type="number" value="${c.current_occupancy || 0}" onchange="updateEvacuation(${c.id}, 'current_occupancy', this.value)" class="border rounded px-2 py-1 w-20"></td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteEvacuation(${c.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {}
+        }
+
+        async function addEvacuationCenter(e) {
+            e.preventDefault();
+            const name = document.getElementById('evacName').value;
+            const address = document.getElementById('evacAddress').value;
+            const capacity = parseInt(document.getElementById('evacCapacity').value);
+            const current_occupancy = parseInt(document.getElementById('evacOccupancy').value) || 0;
+            
+            try {
+                const res = await fetch(`${API_URL}/evacuation-centers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ name, address, capacity, current_occupancy })
+                });
+                if (res.ok) {
+                    alert('Evacuation center added!');
+                    e.target.reset();
+                    loadAdminEvacuation();
+                    loadEvacuationCenters();
+                }
+            } catch (e) {}
+        }
+
+        async function updateEvacuation(id, field, value) {
+            const center = (await fetch(`${API_URL}/evacuation-centers`).then(r => r.json())).find(c => c.id === id);
+            if (!center) return;
+            center[field] = field === 'capacity' || field === 'current_occupancy' ? parseInt(value) : value;
+            await fetch(`${API_URL}/evacuation-centers/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(center)
+            });
+            loadEvacuationCenters();
+        }
+
+        async function deleteEvacuation(id) {
+            if (!confirm('Delete this evacuation center?')) return;
+            await fetch(`${API_URL}/evacuation-centers/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadAdminEvacuation();
+            loadEvacuationCenters();
+        }
+
+        // User Accounts Management
+        let allUsers = [];
+        
+        async function loadAdminUsers() {
+            try {
+                const res = await fetch(`${API_URL}/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                allUsers = await res.json();
+                renderUsers(allUsers);
+            } catch (e) {}
+        }
+        
+        function renderUsers(users) {
+            const tbody = document.getElementById('adminUsersTable');
+            tbody.innerHTML = users.map(u => `
+                <tr class="hover:bg-slate-50 user-row">
+                    <td class="px-4 py-3 font-medium">${u.first_name || ''} ${u.last_name || ''}</td>
+                    <td class="px-4 py-3 text-sm">${u.email}</td>
+                    <td class="px-4 py-3 text-sm">${u.phone || '-'}</td>
+                    <td class="px-4 py-3 text-sm">${u.address || '-'}</td>
+                    <td class="px-4 py-3">
+                        <select onchange="updateUserRole(${u.id}, this.value)" class="border rounded px-2 py-1 text-sm">
+                            <option value="resident" ${u.role === 'resident' ? 'selected' : ''}>Resident</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-3 text-sm text-slate-500">${new Date(u.created_at).toLocaleDateString()}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                            <button onclick="editUser(${u.id})" class="text-blue-600 hover:text-blue-800">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteUser(${u.id})" class="text-red-600 hover:text-red-800">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+        
+        function showCreateUserForm() {
+            document.getElementById('userFormTitle').textContent = 'Create User';
+            document.getElementById('editUserId').value = '';
+            document.getElementById('userFirstName').value = '';
+            document.getElementById('userLastName').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userPhone').value = '';
+            document.getElementById('userRole').value = 'resident';
+            document.getElementById('userAddress').value = '';
+            document.getElementById('userForm').classList.remove('hidden');
+        }
+        
+        function hideUserForm() {
+            document.getElementById('userForm').classList.add('hidden');
+        }
+        
+        function editUser(id) {
+            const user = allUsers.find(u => u.id === id);
+            if (!user) return;
+            document.getElementById('userFormTitle').textContent = 'Edit User';
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('userFirstName').value = user.first_name || '';
+            document.getElementById('userLastName').value = user.last_name || '';
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userPhone').value = user.phone || '';
+            document.getElementById('userRole').value = user.role || 'resident';
+            document.getElementById('userAddress').value = user.address || '';
+            document.getElementById('userForm').classList.remove('hidden');
+        }
+        
+        async function saveUser(e) {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            const first_name = document.getElementById('userFirstName').value;
+            const last_name = document.getElementById('userLastName').value;
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            const phone = document.getElementById('userPhone').value;
+            const role = document.getElementById('userRole').value;
+            const address = document.getElementById('userAddress').value;
+            
+            const data = { first_name, last_name, email, phone, role, address };
+            if (password) data.password = password;
+            
+            try {
+                let url = `${API_URL}/auth/register`;
+                let method = 'POST';
+                if (id) {
+                    url = `${API_URL}/users/${id}`;
+                    method = 'PUT';
+                }
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    alert(id ? 'User updated!' : 'User created!');
+                    hideUserForm();
+                    loadAdminUsers();
+                } else {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to save user');
+                }
+            } catch (e) {
+                alert('Failed to save user');
+            }
+        }
+        
+        async function deleteUser(id) {
+            if (!confirm('Are you sure you want to delete this user?')) return;
+            try {
+                const res = await fetch(`${API_URL}/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    alert('User deleted!');
+                    loadAdminUsers();
+                } else {
+                    alert('Failed to delete user');
+                }
+            } catch (e) {
+                alert('Failed to delete user');
+            }
+        }
+        
+        async function updateUserRole(userId, role) {
+            try {
+                await fetch(`${API_URL}/users/${userId}/role`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ role })
+                });
+            } catch (e) {}
+        }
+        
+        function togglePassword(btn) {
+            const span = btn.previousElementSibling;
+            if (span.textContent === '••••••••') {
+                span.textContent = span.dataset.password;
+                btn.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4"></i>';
+            } else {
+                span.textContent = '••••••••';
+                btn.innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i>';
+            }
+            lucide.createIcons();
+        }
+        
+        function searchUsers() {
+            const query = document.getElementById('userSearch').value.toLowerCase();
+            const filtered = allUsers.filter(u => 
+                (u.first_name || '').toLowerCase().includes(query) ||
+                (u.last_name || '').toLowerCase().includes(query) ||
+                (u.email || '').toLowerCase().includes(query) ||
+                (u.phone || '').toLowerCase().includes(query) ||
+                (u.address || '').toLowerCase().includes(query) ||
+                (u.role || '').toLowerCase().includes(query)
+            );
+            renderUsers(filtered);
+        }
+
+        // Admin Business Permits
+        async function loadAdminBusiness() {
+            try {
+                const res = await fetch(`${API_URL}/businesses`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const businesses = await res.json();
+                const tbody = document.getElementById('adminBusinessTable');
+                tbody.innerHTML = businesses.map(b => `
+                    <tr>
+                        <td class="px-4 py-3 font-medium">${b.name}</td>
+                        <td class="px-4 py-3">${b.first_name || ''} ${b.last_name || ''}</td>
+                        <td class="px-4 py-3 capitalize">${b.type}</td>
+                        <td class="px-4 py-3 text-sm">${b.address}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${b.permit_status === 'approved' ? 'bg-green-100 text-green-700' : b.permit_status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}">${b.permit_status}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <select onchange="updateBusinessStatus(${b.id}, this.value)" class="border rounded px-2 py-1 text-sm">
+                                <option value="pending" ${b.permit_status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="approved" ${b.permit_status === 'approved' ? 'selected' : ''}>Approve</option>
+                                <option value="declined" ${b.permit_status === 'declined' ? 'selected' : ''}>Decline</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {}
+        }
+
+        async function updateBusinessStatus(id, status) {
+            try {
+                await fetch(`${API_URL}/businesses/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ permit_status: status })
+                });
+                loadAdminBusiness();
+            } catch (e) {}
+        }
+
+        // Resident Business Status
+        async function loadMyBusinesses() {
+            try {
+                const res = await fetch(`${API_URL}/businesses`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const businesses = await res.json();
+                const myBusinesses = businesses.filter(b => b.owner_id === currentUser.id);
+                const tbody = document.getElementById('myBusinessesTable');
+                if (tbody) {
+                    tbody.innerHTML = myBusinesses.length ? myBusinesses.map(b => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-6 py-4 font-medium">${b.name}</td>
+                            <td class="px-6 py-4 capitalize">${b.type}</td>
+                            <td class="px-6 py-4">${b.address}</td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${b.permit_status === 'approved' ? 'bg-green-100 text-green-700' : b.permit_status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}">${b.permit_status}</span></td>
+                            <td class="px-6 py-4 text-sm text-slate-500">${new Date(b.created_at).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="5" class="px-6 py-4 text-center text-slate-500">No business applications yet</td></tr>';
+                }
+            } catch (e) {}
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#userMenu')) {
+                document.getElementById('userDropdown').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
