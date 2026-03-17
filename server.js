@@ -70,6 +70,30 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
+// Seed demo accounts endpoint
+app.post('/api/seed', async (req, res) => {
+    try {
+        const db = getDb();
+        const now = new Date();
+        
+        await db.collection('users').updateOne(
+            { email: 'admin@barangay.gov' },
+            { $setOnInsert: { email: 'admin@barangay.gov', password: 'admin123', first_name: 'Admin', last_name: 'User', phone: '09123456789', address: 'Barangay Hall', role: 'admin', photo_url: null, created_at: now } },
+            { upsert: true }
+        );
+        
+        await db.collection('users').updateOne(
+            { email: 'resident@example.com' },
+            { $setOnInsert: { email: 'resident@example.com', password: 'admin123', first_name: 'Juan', last_name: 'Dela Cruz', phone: '09987654321', address: '123 Main Street', role: 'resident', photo_url: null, created_at: now } },
+            { upsert: true }
+        );
+        
+        res.json({ success: true, message: 'Demo accounts seeded' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
