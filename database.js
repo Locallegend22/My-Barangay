@@ -3,16 +3,13 @@ const { MongoClient } = require('mongodb');
 let db = null;
 let client = null;
 
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const DB_NAME = process.env.DB_NAME || process.env.MONGODB_DATABASE || 'barangay';
+const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017';
+const DB_NAME = process.env.MONGODB_DATABASE || process.env.DB_NAME || 'barangay';
 
 async function initDatabase() {
     try {
-        console.log('Connecting to MongoDB...');
-        client = new MongoClient(MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        console.log('Connecting to MongoDB:', MONGO_URI.substring(0, 25) + '...');
+        client = new MongoClient(MONGO_URI);
         await client.connect();
         db = client.db(DB_NAME);
         
@@ -22,7 +19,7 @@ async function initDatabase() {
         console.log('Connected to MongoDB successfully');
         return db;
     } catch (error) {
-        console.error('MongoDB connection error:', error);
+        console.error('MongoDB connection error:', error.message);
         throw error;
     }
 }
@@ -104,6 +101,10 @@ async function seedData() {
 }
 
 function getDb() {
+    if (!db) {
+        console.error('Database not initialized');
+        throw new Error('Database not initialized');
+    }
     return db;
 }
 
