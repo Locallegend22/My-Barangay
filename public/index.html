@@ -9,7 +9,7 @@
     <title>Barangay Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -401,6 +401,8 @@
                         <h3 class="font-heading text-xl font-semibold mb-6">Apply for Document</h3>
                         <form onsubmit="submitDocument(event)" class="space-y-4">
                             <input type="hidden" id="docType">
+                            <input type="hidden" id="docTypeName">
+                            <input type="hidden" id="docFeeInput" value="0">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Applicant Name</label>
                                 <input type="text" id="docApplicantName" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="Enter your full name">
@@ -855,6 +857,17 @@
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Business Address</label>
                                 <input type="text" id="businessAddress" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Fee (₱)</label>
+                                <input type="number" id="businessFee" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500" value="200">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Payment Method</label>
+                                <select id="businessPaymentMethod" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                    <option value="over_the_counter">Over the Counter</option>
+                                    <option value="gcash">GCash</option>
+                                </select>
+                            </div>
                             <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition">
                                 Submit Application
                             </button>
@@ -871,6 +884,8 @@
                                         <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Business Name</th>
                                         <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
                                         <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Address</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Fee</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Payment</th>
                                         <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
                                         <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Date</th>
                                     </tr>
@@ -985,10 +1000,12 @@
                                     <tr>
                                         <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Date</th>
                                         <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Description</th>
                                         <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Location</th>
                                         <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Reporter</th>
                                         <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
-                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Action Taken</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Save</th>
                                     </tr>
                                 </thead>
                                 <tbody id="adminIncidents" class="divide-y">
@@ -1013,8 +1030,11 @@
                                 <input type="text" id="docTypeName" required class="w-full px-4 py-2 border rounded-lg">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Slug (unique)</label>
-                                <input type="text" id="docTypeSlug" required class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., building_permit">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                                <select id="docTypeStatus" required class="w-full px-4 py-2 border rounded-lg">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
@@ -1065,17 +1085,9 @@
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Position</label>
                                 <input type="text" id="officialPosition" required class="w-full px-4 py-2 border rounded-lg">
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-                                <input type="text" id="officialPhone" class="w-full px-4 py-2 border rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                                <input type="email" id="officialEmail" class="w-full px-4 py-2 border rounded-lg">
-                            </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Office Hours</label>
-                                <input type="text" id="officialHours" class="w-full px-4 py-2 border rounded-lg" placeholder="Mon-Fri: 8AM-5PM">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Term</label>
+                                <input type="text" id="officialTerm" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 2025-2028">
                             </div>
                             <div class="md:col-span-2">
                                 <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium">
@@ -1091,8 +1103,7 @@
                                 <tr>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Name</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Position</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Phone</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Email</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Term</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
                                 </tr>
                             </thead>
@@ -1533,6 +1544,8 @@
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Owner</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Type</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Address</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Fee</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Payment</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">Actions</th>
                                 </tr>
@@ -1554,19 +1567,46 @@
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             
-            // Initially hide main content and show login page
-            const mainContent = document.getElementById('mainContent');
-            const loginPage = document.getElementById('loginPage');
-            if (mainContent) mainContent.classList.add('hidden');
-            if (loginPage) loginPage.classList.remove('hidden');
-            
-            loadInitialData();
             const savedToken = localStorage.getItem('token');
             if (savedToken) {
                 token = savedToken;
                 checkAuth();
+            } else {
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
             }
+            
+            loadInitialData();
         });
+
+        async function checkAuth() {
+            console.log('checkAuth called with token:', token);
+            try {
+                const res = await fetch(`${API_URL}/auth/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                console.log('Profile response:', res.status);
+                if (res.ok) {
+                    currentUser = await res.json();
+                    console.log('User logged in:', currentUser);
+                    // Show main content
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    updateUIForLoggedIn();
+                } else {
+                    // Token invalid - show login
+                    console.log('Token invalid');
+                    localStorage.removeItem('token');
+                    document.getElementById('loginPage').classList.remove('hidden');
+                    document.getElementById('mainContent').classList.add('hidden');
+                }
+            } catch (e) {
+                // Error - show login
+                console.log('Error:', e.message);
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+            }
+        }
 
         async function loadInitialData() {
             await Promise.all([
@@ -1583,22 +1623,6 @@
             
             if (token) {
                 await loadUserData();
-            }
-        }
-
-        async function checkAuth() {
-            try {
-                const res = await fetch(`${API_URL}/auth/profile`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    currentUser = await res.json();
-                    updateUIForLoggedIn();
-                } else {
-                    logout();
-                }
-            } catch (e) {
-                logout();
             }
         }
 
@@ -1752,8 +1776,8 @@
                 loadDashboardStats();
                 loadGcashSettings();
             }
-            if (pageId === 'adminDocServices') loadDocTypes();
-            if (pageId === 'adminOfficials') loadAdminOfficials();
+            if (pageId === 'adminDocServices') { loadDocTypes(); }
+            if (pageId === 'adminOfficials') { loadAdminOfficials(); }
             if (pageId === 'adminOrdinances') loadAdminOrdinances();
             if (pageId === 'adminProjects') loadAdminProjects();
             if (pageId === 'adminEvents') loadAdminEvents();
@@ -1767,8 +1791,10 @@
         // Auth Functions
         async function handleLogin(e) {
             e.preventDefault();
+            alert('Login function called!');
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            alert('Email: ' + email);
             
             try {
                 const res = await fetch(`${API_URL}/auth/login`, {
@@ -1778,15 +1804,20 @@
                 });
                 
                 const data = await res.json();
+                alert('Response: ' + JSON.stringify(data));
                 if (res.ok) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    location.reload();
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    token = data.token;
+                    currentUser = data.user;
+                    updateUIForLoggedIn();
                 } else {
                     alert(data.error || 'Login failed');
                 }
             } catch (e) {
-                alert('Login failed: ' + e.message);
+                alert('Login error: ' + e.message);
             }
         }
 
@@ -1899,15 +1930,15 @@
             
             const colors = ['bg-primary-100', 'bg-red-100', 'bg-blue-100', 'bg-amber-100', 'bg-purple-100', 'bg-teal-100', 'bg-pink-100', 'bg-indigo-100'];
             
-            const activeTypes = documentTypesData.filter(t => t.is_active !== false);
+            const activeTypes = documentTypesData.filter(t => t.status === 'active');
             container.innerHTML = activeTypes.map((t, i) => `
-                <div onclick="selectDocumentType('${t._id}', '${t.name}', ${t.price})" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary-500">
+                <div onclick="selectDocumentType(${t.id}, '${t.name}', ${t.fee})" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary-500">
                     <div class="w-12 h-12 ${colors[i % colors.length]} rounded-lg flex items-center justify-center mb-4">
                         <i data-lucide="file-text" class="w-6 h-6 text-primary-700"></i>
                     </div>
                     <h3 class="font-heading font-semibold text-lg">${t.name}</h3>
                     <p class="text-slate-600 text-sm mt-1">${t.description || ''}</p>
-                    <p class="text-primary-600 font-semibold mt-2">₱${t.price || 0}.00</p>
+                    <p class="text-primary-600 font-semibold mt-2">₱${t.fee || 0}.00</p>
                 </div>
             `).join('');
             lucide.createIcons();
@@ -1915,7 +1946,9 @@
 
         function selectDocumentType(typeId, name, fee) {
             document.getElementById('docType').value = typeId;
-            document.getElementById('selectedDocType').textContent = name || typeId.replace(/_/g, ' ').toUpperCase();
+            document.getElementById('docTypeName').value = name || '';
+            document.getElementById('docFeeInput').value = fee || 0;
+            document.getElementById('selectedDocType').textContent = name || typeId;
             document.getElementById('docFee').textContent = `₱${fee || 0}.00`;
             document.getElementById('docApplicantName').value = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : '';
             document.getElementById('documentForm').classList.remove('hidden');
@@ -1948,7 +1981,9 @@
 
         async function submitDocument(e) {
             e.preventDefault();
-            const type = document.getElementById('docType').value;
+            const typeId = document.getElementById('docType').value;
+            const typeName = document.getElementById('docTypeName').value;
+            const fee = parseFloat(document.getElementById('docFeeInput').value) || 0;
             const applicant_name = document.getElementById('docApplicantName').value;
             const description = document.getElementById('docDescription').value;
             const payment_method = document.getElementById('docPaymentMethod').value;
@@ -1960,11 +1995,12 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ type, applicant_name, description, payment_method })
+                    body: JSON.stringify({ type: typeName, fee, applicant_name, description, payment_method })
                 });
                 
                 if (res.ok) {
-                    alert('Document application submitted successfully!');
+                    const data = await res.json();
+                    alert('Document application submitted successfully!\n\nYour Tracking Code: ' + data.tracking_code + '\n\nPlease save this code to track your application.');
                     document.getElementById('docApplicantName').value = '';
                     document.getElementById('docDescription').value = '';
                     cancelDocument();
@@ -2003,9 +2039,9 @@
                 <tr class="hover:bg-slate-50">
                     <td class="px-6 py-4 font-mono text-sm">${d.tracking_code || 'N/A'}</td>
                     <td class="px-6 py-4">${d.applicant_name || '-'}</td>
-                    <td class="px-6 py-4 capitalize">${d.type.replace(/_/g, ' ')}</td>
+                    <td class="px-6 py-4 capitalize">${(d.type || '').replace(/_/g, ' ')}</td>
                     <td class="px-6 py-4">₱${d.fee || 0}</td>
-                    <td class="px-6 py-4 capitalize text-sm">${d.payment_method ? d.payment_method.replace(/_/g, ' ') : '-'}</td>
+                    <td class="px-6 py-4 capitalize text-sm">${(d.payment_method || '').replace(/_/g, ' ') || '-'}</td>
                     <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(d.status)}">${d.status}</span></td>
                     <td class="px-6 py-4 text-sm text-slate-600">${d.remarks || '-'}</td>
                     <td class="px-6 py-4 text-sm text-slate-500">${new Date(d.created_at).toLocaleDateString()}</td>
@@ -2110,12 +2146,13 @@
                     <div class="bg-white rounded-lg shadow-sm p-4">
                         <div class="flex justify-between items-start">
                             <div>
-                                <p class="font-semibold capitalize">${i.type.replace(/_/g, ' ')}</p>
+                                <p class="font-semibold capitalize">${(i.type || '').replace(/_/g, ' ')}</p>
                                 <p class="text-sm text-slate-500">${i.location}</p>
                             </div>
                             <span class="px-2 py-1 rounded-full text-xs font-medium ${i.status === 'open' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${i.status}</span>
                         </div>
-                        <p class="text-sm text-slate-600 mt-2">${i.description}</p>
+                        <p class="text-sm text-slate-600 mt-2">${i.description || ''}</p>
+                        ${i.action_taken ? `<p class="text-sm text-blue-600 mt-2 font-medium">Action Taken: ${i.action_taken}</p>` : ''}
                         <p class="text-xs text-slate-400 mt-2">${new Date(i.created_at).toLocaleDateString()}</p>
                     </div>
                 `).join('');
@@ -2128,6 +2165,9 @@
             const name = document.getElementById('businessName').value;
             const type = document.getElementById('businessType').value;
             const address = document.getElementById('businessAddress').value;
+            const fee = parseFloat(document.getElementById('businessFee').value) || 0;
+            const payment_method = document.getElementById('businessPaymentMethod').value;
+            const description = '';
             
             try {
                 const res = await fetch(`${API_URL}/businesses`, {
@@ -2136,7 +2176,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ name, type, address })
+                    body: JSON.stringify({ name, type, address, description, fee, payment_method })
                 });
                 
                 if (res.ok) {
@@ -2144,6 +2184,7 @@
                     document.getElementById('businessName').value = '';
                     document.getElementById('businessAddress').value = '';
                     loadBusinesses();
+                    loadMyBusinesses();
                 }
             } catch (e) {
                 alert('Failed to submit application');
@@ -2161,7 +2202,9 @@
                         <td class="px-6 py-4 font-medium">${b.name}</td>
                         <td class="px-6 py-4 capitalize">${b.type}</td>
                         <td class="px-6 py-4">${b.address}</td>
-                        <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${b.permit_status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${b.permit_status}</span></td>
+                        <td class="px-6 py-4">₱${b.fee || 0}</td>
+                        <td class="px-6 py-4 capitalize text-sm">${b.payment_method ? b.payment_method.replace(/_/g, ' ') : '-'}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${b.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${b.status}</span></td>
                     </tr>
                 `).join('');
             } catch (e) {}
@@ -2217,17 +2260,23 @@
                 incBody.innerHTML = (stats.recentIncidents || []).map(i => `
                     <tr>
                         <td class="px-4 py-3 text-sm">${new Date(i.created_at).toLocaleDateString()}</td>
-                        <td class="px-4 py-3 capitalize">${i.type.replace(/_/g, ' ')}</td>
+                        <td class="px-4 py-3 capitalize">${(i.type || '').replace(/_/g, ' ')}</td>
+                        <td class="px-4 py-3">${i.description || '-'}</td>
                         <td class="px-4 py-3">${i.location}</td>
-                        <td class="px-4 py-3">${i.first_name} ${i.last_name}</td>
-                        <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-medium ${i.status === 'open' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${i.status}</span></td>
+                        <td class="px-4 py-3">${i.first_name || ''} ${i.last_name || ''}</td>
                         <td class="px-4 py-3">
-                            <select onchange="updateIncidentStatus(${i.id}, this.value)" class="text-sm border rounded px-2 py-1">
+                            <select id="status_${i.id}" class="text-sm border rounded px-2 py-1">
                                 <option value="open" ${i.status === 'open' ? 'selected' : ''}>Open</option>
                                 <option value="investigating" ${i.status === 'investigating' ? 'selected' : ''}>Investigating</option>
                                 <option value="resolved" ${i.status === 'resolved' ? 'selected' : ''}>Resolved</option>
                                 <option value="closed" ${i.status === 'closed' ? 'selected' : ''}>Closed</option>
                             </select>
+                        </td>
+                        <td class="px-4 py-3">
+                            <input type="text" id="action_${i.id}" value="${i.action_taken || ''}" placeholder="Action taken" class="text-sm border rounded px-2 py-1 w-32">
+                        </td>
+                        <td class="px-4 py-3">
+                            <button onclick="updateIncident(${i.id})" class="text-primary-600 hover:text-primary-800 text-sm font-medium">Save</button>
                         </td>
                     </tr>
                 `).join('');
@@ -2296,7 +2345,7 @@
 
         async function updateDocStatus(id, status) {
             try {
-                await fetch(`${API_URL}/documents/${id}/status`, {
+                await fetch(`${API_URL}/documents/${id}`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -2309,13 +2358,13 @@
 
         async function updateDocRemarks(id, remarks) {
             try {
-                const res = await fetch(`${API_URL}/documents/${id}/status`, {
+                const res = await fetch(`${API_URL}/documents/${id}`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ remarks })
+                    body: JSON.stringify({ status: 'processing', remarks })
                 });
                 if (res.ok) {
                     alert('Remarks saved!');
@@ -2326,17 +2375,25 @@
             }
         }
 
-        async function updateIncidentStatus(id, status) {
+        async function updateIncident(id) {
+            const status = document.getElementById('status_' + id)?.value || 'open';
+            const action_taken = document.getElementById('action_' + id)?.value || '';
             try {
-                await fetch(`${API_URL}/incidents/${id}/status`, {
+                const res = await fetch(`${API_URL}/incidents/${id}`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ status })
+                    body: JSON.stringify({ status, action_taken })
                 });
-            } catch (e) {}
+                if (res.ok) {
+                    alert('Incident updated!');
+                    loadDashboardStats();
+                }
+            } catch (e) {
+                alert('Failed to update incident');
+            }
         }
 
         // Data Loading Functions
@@ -2423,10 +2480,7 @@
                         <p class="text-primary-600 text-sm">${o.position}</p>
                         <div class="mt-4 space-y-2 text-sm text-slate-500">
                             <p class="flex items-center justify-center gap-2">
-                                <i data-lucide="phone" class="w-4 h-4"></i> ${o.phone}
-                            </p>
-                            <p class="flex items-center justify-center gap-2">
-                                <i data-lucide="clock" class="w-4 h-4"></i> ${o.office_hours}
+                                <i data-lucide="calendar" class="w-4 h-4"></i> ${o.term || '-'}
                             </p>
                         </div>
                     </div>
@@ -2446,16 +2500,16 @@
                     total += b.amount;
                     return `
                         <tr class="hover:bg-slate-50">
-                            <td class="px-6 py-4 font-medium">${b.title}</td>
-                            <td class="px-6 py-4 capitalize">${b.category}</td>
+                            <td class="px-6 py-4 font-medium">${b.category}</td>
+                            <td class="px-6 py-4">${b.description || '-'}</td>
                             <td class="px-6 py-4">₱${b.amount.toLocaleString()}</td>
-                            <td class="px-6 py-4 text-slate-500">${new Date(b.report_date).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 text-slate-500">${b.year}</td>
                         </tr>
                     `;
                 }).join('');
                 
                 document.getElementById('totalBudget').textContent = `₱${total.toLocaleString()}`;
-                document.getElementById('spentBudget').textContent = `₱${total.toLocaleString()}`;
+                document.getElementById('spentBudget').textContent = `₱0`;
             } catch (e) {}
         }
 
@@ -2466,9 +2520,9 @@
                 
                 document.getElementById('ordinancesTable').innerHTML = data.map(o => `
                     <tr class="hover:bg-slate-50">
-                        <td class="px-6 py-4 font-mono text-sm">${o.ordinance_number || 'N/A'}</td>
+                        <td class="px-6 py-4 font-mono text-sm">${o.id}</td>
                         <td class="px-6 py-4 font-medium">${o.title}</td>
-                        <td class="px-6 py-4 capitalize">${o.category || 'general'}</td>
+                        <td class="px-6 py-4 capitalize">general</td>
                         <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${o.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}">${o.status || 'active'}</span></td>
                     </tr>
                 `).join('');
@@ -2561,13 +2615,53 @@
                 const res = await fetch(`${API_URL}/document-types`);
                 const types = await res.json();
                 const tbody = document.getElementById('docTypesTable');
+                if (!tbody) return;
                 tbody.innerHTML = types.map(t => `
                     <tr>
-                        <td class="px-4 py-3"><input type="text" value="${t.name}" onchange="updateDocType('${t._id}', 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
-                        <td class="px-4 py-3"><input type="text" value="${t.description || ''}" onchange="updateDocType('${t._id}', 'description', this.value)" class="border rounded px-2 py-1 w-full"></td>
-                        <td class="px-4 py-3"><input type="number" value="${t.price || 0}" onchange="updateDocType('${t._id}', 'price', this.value)" class="border rounded px-2 py-1 w-24"></td>
+                        <td class="px-4 py-3"><input type="text" value="${t.name}" onchange="updateDocType(${t.id}, 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${t.description || ''}" onchange="updateDocType(${t.id}, 'description', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="number" value="${t.fee || 0}" onchange="updateDocType(${t.id}, 'fee', this.value)" class="border rounded px-2 py-1 w-24"></td>
                         <td class="px-4 py-3">
-                            <button onclick="deleteDocType('${t._id}')" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <select onchange="updateDocType(${t.id}, 'status', this.value)" class="border rounded px-2 py-1">
+                                <option value="active" ${t.status === 'active' ? 'selected' : ''}>Active</option>
+                                <option value="inactive" ${t.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                            </select>
+                        </td>
+                        <td class="px-4 py-3">
+                            <button onclick="deleteDocType(${t.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {
+                console.error('Error loading doc types:', e);
+            }
+        }
+
+        async function loadDocRequests() {
+            try {
+                const res = await fetch(`${API_URL}/documents`);
+                const docs = await res.json();
+                const tbody = document.getElementById('docRequestsTable');
+                if (!tbody) return;
+                tbody.innerHTML = docs.map(d => `
+                    <tr>
+                        <td class="px-4 py-3 font-mono text-sm">${d.tracking_code || '-'}</td>
+                        <td class="px-4 py-3">${d.applicant_name || ''}</td>
+                        <td class="px-4 py-3 capitalize">${d.type || '-'}</td>
+                        <td class="px-4 py-3">₱${d.fee || 0}</td>
+                        <td class="px-4 py-3 text-sm">${d.description || '-'}</td>
+                        <td class="px-4 py-3 text-sm">${d.created_at ? new Date(d.created_at).toLocaleDateString() : '-'}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs ${d.status === 'approved' ? 'bg-green-100 text-green-700' : d.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}">${d.status}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <input type="text" id="remarks-${d.id}" value="${d.remarks || ''}" placeholder="Add remarks" class="border rounded px-2 py-1 text-sm w-32">
+                        </td>
+                        <td class="px-4 py-3">
+                            <button onclick="processDoc(${d.id}, 'approved')" class="text-green-600 hover:text-green-800 mr-1" title="Approve"><i data-lucide="check-circle" class="w-4 h-4"></i></button>
+                            <button onclick="processDoc(${d.id}, 'rejected')" class="text-red-600 hover:text-red-800 mr-1" title="Reject"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
+                            <button onclick="processDoc(${d.id}, 'processing')" class="text-blue-600 hover:text-blue-800" title="Processing"><i data-lucide="clock" class="w-4 h-4"></i></button>
                         </td>
                     </tr>
                 `).join('');
@@ -2575,32 +2669,61 @@
             } catch (e) {}
         }
 
+        async function processDoc(id, status) {
+            const remarks = document.getElementById('remarks-' + id)?.value || '';
+            try {
+                const res = await fetch(`${API_URL}/documents/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status, remarks })
+                });
+                if (res.ok) {
+                    alert('Document ' + status + '!');
+                    loadDocRequests();
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
         async function addDocumentType(e) {
             e.preventDefault();
             const name = document.getElementById('docTypeName').value;
+            const slug = name.toLowerCase().replace(/\s+/g, '_');
+            const status = document.getElementById('docTypeStatus').value;
             const description = document.getElementById('docTypeDesc').value;
-            const price = parseFloat(document.getElementById('docTypeFee').value);
+            const fee = parseFloat(document.getElementById('docTypeFee').value);
             const requirements = 'Valid ID';
             
             try {
                 const res = await fetch(`${API_URL}/document-types`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ name, description, price, requirements })
+                    body: JSON.stringify({ name, slug, status, description, fee, requirements })
                 });
+                const data = await res.json();
+                console.log('Add response:', res.status, data);
                 if (res.ok) {
-                    alert('Document type added!');
-                    e.target.reset();
+                    document.getElementById('docTypeName').value = '';
+                    document.getElementById('docTypeStatus').value = 'active';
+                    document.getElementById('docTypeDesc').value = '';
+                    document.getElementById('docTypeFee').value = '';
+                    showPage('adminDocServices');
                     loadDocTypes();
+                    loadDocumentTypes();
+                } else {
+                    alert(data.error || 'Failed to add');
                 }
-            } catch (e) {}
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
         }
 
         async function updateDocType(id, field, value) {
             const types = await fetch(`${API_URL}/document-types`).then(r => r.json());
-            const type = types.find(t => t._id === id);
+            const type = types.find(t => t.id == id);
             if (!type) return;
-            type[field] = field === 'price' ? parseFloat(value) : value;
+            type[field] = field === 'fee' ? parseFloat(value) : value;
             await fetch(`${API_URL}/document-types/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -2615,8 +2738,16 @@
         }
 
         // Officials Management
-                        <td class="px-4 py-3"><input type="text" value="${o.phone || ''}" onchange="updateOfficial(${o.id}, 'phone', this.value)" class="border rounded px-2 py-1 w-32"></td>
-                        <td class="px-4 py-3"><input type="email" value="${o.email || ''}" onchange="updateOfficial(${o.id}, 'email', this.value)" class="border rounded px-2 py-1 w-40"></td>
+        async function loadAdminOfficials() {
+            try {
+                const res = await fetch(`${API_URL}/officials`);
+                const officials = await res.json();
+                const tbody = document.getElementById('adminOfficialsTable');
+                tbody.innerHTML = officials.map(o => `
+                    <tr>
+                        <td class="px-4 py-3"><input type="text" value="${o.name}" onchange="updateOfficial(${o.id}, 'name', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${o.position}" onchange="updateOfficial(${o.id}, 'position', this.value)" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-3"><input type="text" value="${o.term || ''}" onchange="updateOfficial(${o.id}, 'term', this.value)" class="border rounded px-2 py-1 w-32"></td>
                         <td class="px-4 py-3">
                             <button onclick="deleteOfficial(${o.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>
@@ -2628,25 +2759,35 @@
 
         async function addOfficial(e) {
             e.preventDefault();
-            const name = document.getElementById('officialName').value;
-            const position = document.getElementById('officialPosition').value;
-            const phone = document.getElementById('officialPhone').value;
-            const email = document.getElementById('officialEmail').value;
-            const office_hours = document.getElementById('officialHours').value;
+            const nameEl = document.getElementById('officialName');
+            const positionEl = document.getElementById('officialPosition');
+            
+            if (!nameEl || !positionEl) {
+                console.log('Form elements not found');
+                return;
+            }
+            
+            const name = nameEl.value;
+            const position = positionEl.value;
+            const term = document.getElementById('officialTerm')?.value || '';
             
             try {
                 const res = await fetch(`${API_URL}/officials`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ name, position, phone, email, office_hours })
+                    body: JSON.stringify({ name, position, term })
                 });
                 if (res.ok) {
-                    alert('Official added!');
-                    e.target.reset();
+                    if (document.getElementById('officialName')) document.getElementById('officialName').value = '';
+                    if (document.getElementById('officialPosition')) document.getElementById('officialPosition').value = '';
+                    if (document.getElementById('officialTerm')) document.getElementById('officialTerm').value = '';
+                    showPage('adminOfficials');
                     loadAdminOfficials();
                     loadOfficials();
                 }
-            } catch (e) {}
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
         }
 
         async function updateOfficial(id, field, value) {
@@ -2704,12 +2845,14 @@
                     body: JSON.stringify({ title, ordinance_number, category, status, description })
                 });
                 if (res.ok) {
-                    alert('Ordinance added!');
                     e.target.reset();
+                    showPage('adminOrdinances');
                     loadAdminOrdinances();
                     loadOrdinances();
                 }
-            } catch (e) {}
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
         }
 
         async function deleteOrdinance(id) {
@@ -2727,7 +2870,7 @@
                 const tbody = document.getElementById('adminProjectsTable');
                 tbody.innerHTML = projects.map(p => `
                     <tr>
-                        <td class="px-4 py-3 font-medium">${p.title}</td>
+                        <td class="px-4 py-3 font-medium">${p.name}</td>
                         <td class="px-4 py-3">₱${(p.budget || 0).toLocaleString()}</td>
                         <td class="px-4 py-3">
                             <select onchange="updateProject(${p.id}, 'status', this.value)" class="border rounded px-2 py-1">
@@ -2761,8 +2904,8 @@
                     body: JSON.stringify({ title, budget, status, target_date, description })
                 });
                 if (res.ok) {
-                    alert('Project added!');
                     e.target.reset();
+                    showPage('adminProjects');
                     loadAdminProjects();
                 }
             } catch (e) {}
@@ -2793,7 +2936,7 @@
                 const tbody = document.getElementById('adminEventsTable');
                 tbody.innerHTML = events.map(e => `
                     <tr>
-                        <td class="px-4 py-3 font-medium">${e.title}</td>
+                        <td class="px-4 py-3 font-medium">${e.name}</td>
                         <td class="px-4 py-3 text-sm">${e.event_date}</td>
                         <td class="px-4 py-3 text-sm">${e.location}</td>
                         <td class="px-4 py-3 capitalize">${e.event_type}</td>
@@ -2821,8 +2964,8 @@
                     body: JSON.stringify({ title, event_date, location, event_type, description })
                 });
                 if (res.ok) {
-                    alert('Event added!');
                     e.target.reset();
+                    showPage('adminEvents');
                     loadAdminEvents();
                     loadEvents();
                 }
@@ -2871,8 +3014,8 @@
                     body: JSON.stringify({ title, category, priority, content })
                 });
                 if (res.ok) {
-                    alert('Announcement added!');
                     e.target.reset();
+                    showPage('adminAnnouncements');
                     loadAdminAnnouncements();
                     loadAnnouncements();
                 }
@@ -2921,8 +3064,8 @@
                     body: JSON.stringify({ name, phone, category, description })
                 });
                 if (res.ok) {
-                    alert('Hotline added!');
                     e.target.reset();
+                    showPage('adminHotlines');
                     loadAdminHotlines();
                     loadHotlines();
                 }
@@ -2971,8 +3114,8 @@
                     body: JSON.stringify({ name, address, capacity, current_occupancy })
                 });
                 if (res.ok) {
-                    alert('Evacuation center added!');
                     e.target.reset();
+                    showPage('adminEvacuation');
                     loadAdminEvacuation();
                     loadEvacuationCenters();
                 }
@@ -3100,8 +3243,8 @@
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
-                    alert(id ? 'User updated!' : 'User created!');
                     hideUserForm();
+                    showPage('adminUsers');
                     loadAdminUsers();
                 } else {
                     const err = await res.json();
@@ -3179,14 +3322,16 @@
                         <td class="px-4 py-3">${b.first_name || ''} ${b.last_name || ''}</td>
                         <td class="px-4 py-3 capitalize">${b.type}</td>
                         <td class="px-4 py-3 text-sm">${b.address}</td>
+                        <td class="px-4 py-3">₱${b.fee || 0}</td>
+                        <td class="px-4 py-3 capitalize text-sm">${b.payment_method ? b.payment_method.replace(/_/g, ' ') : '-'}</td>
                         <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-medium ${b.permit_status === 'approved' ? 'bg-green-100 text-green-700' : b.permit_status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}">${b.permit_status}</span>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${b.status === 'approved' ? 'bg-green-100 text-green-700' : b.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}">${b.status}</span>
                         </td>
                         <td class="px-4 py-3">
                             <select onchange="updateBusinessStatus(${b.id}, this.value)" class="border rounded px-2 py-1 text-sm">
-                                <option value="pending" ${b.permit_status === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="approved" ${b.permit_status === 'approved' ? 'selected' : ''}>Approve</option>
-                                <option value="declined" ${b.permit_status === 'declined' ? 'selected' : ''}>Decline</option>
+                                <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="approved" ${b.status === 'approved' ? 'selected' : ''}>Approve</option>
+                                <option value="declined" ${b.status === 'declined' ? 'selected' : ''}>Decline</option>
                             </select>
                         </td>
                     </tr>
@@ -3196,10 +3341,10 @@
 
         async function updateBusinessStatus(id, status) {
             try {
-                await fetch(`${API_URL}/businesses/${id}/status`, {
+                await fetch(`${API_URL}/businesses/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ permit_status: status })
+                    body: JSON.stringify({ status })
                 });
                 loadAdminBusiness();
             } catch (e) {}
@@ -3220,18 +3365,21 @@
                             <td class="px-6 py-4 font-medium">${b.name}</td>
                             <td class="px-6 py-4 capitalize">${b.type}</td>
                             <td class="px-6 py-4">${b.address}</td>
-                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${b.permit_status === 'approved' ? 'bg-green-100 text-green-700' : b.permit_status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}">${b.permit_status}</span></td>
+                            <td class="px-6 py-4">₱${b.fee || 0}</td>
+                            <td class="px-6 py-4 capitalize text-sm">${b.payment_method ? b.payment_method.replace(/_/g, ' ') : '-'}</td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${b.status === 'approved' ? 'bg-green-100 text-green-700' : b.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}">${b.status}</span></td>
                             <td class="px-6 py-4 text-sm text-slate-500">${new Date(b.created_at).toLocaleDateString()}</td>
                         </tr>
-                    `).join('') : '<tr><td colspan="5" class="px-6 py-4 text-center text-slate-500">No business applications yet</td></tr>';
+                    `).join('') : '<tr><td colspan="7" class="px-6 py-4 text-center text-slate-500">No business applications yet</td></tr>';
                 }
             } catch (e) {}
         }
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('#userMenu')) {
-                document.getElementById('userDropdown').classList.add('hidden');
+            const userDropdown = document.getElementById('userDropdown');
+            if (!e.target.closest('#userMenu') && userDropdown) {
+                userDropdown.classList.add('hidden');
             }
         });
     </script>
